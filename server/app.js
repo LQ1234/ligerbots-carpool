@@ -588,8 +588,6 @@ function emitEvent(name, json){
     messageId++;
 }
 
-app.use("/", express.static(__dirname + "/../client/dist"));
-
 
 var server = app.listen(3010);
 
@@ -597,9 +595,4 @@ var server = app.listen(3010);
 /*
 CREATE USER "ligerbots-carpool"@"%" IDENTIFIED BY "PASSWORD";
 GRANT ALL ON *.* TO "ligerbots-carpool"@"%"
-*/
-
-/*
-tests
-
 */
