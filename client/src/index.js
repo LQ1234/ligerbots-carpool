@@ -1,3 +1,5 @@
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
 
 function getTextOrReject(response){
     if(!response.ok) {
@@ -19,7 +21,7 @@ function objectFilter(obj,fn){
     }
     return(res);
 }
-class CPEventList extends React.Component {
+class CPEventList extends Component {
     constructor(props) {
         super(props);
     }
@@ -47,7 +49,7 @@ class CPEventList extends React.Component {
         );
     }
 }
-class CPEvent extends React.Component {
+class CPEvent extends Component {
     constructor(props){
         super(props);
     }
@@ -117,7 +119,7 @@ class CPEvent extends React.Component {
     }
 }
 
-class CPAddForm extends React.Component {
+class CPAddForm extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -269,7 +271,7 @@ class CPAddForm extends React.Component {
         );
     }
 }
-class CPCarpoolDropdown extends React.Component {
+class CPCarpoolDropdown extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -393,7 +395,7 @@ function dropdownBounding(dropdown){
         dropdown.style.left=`${margin}px`;
     }
 }
-class CPDriverView extends React.Component {
+class CPDriverView extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -528,7 +530,7 @@ class CPDriverView extends React.Component {
     }
 }
 
-class CPDriverViewCarpool extends React.Component {
+class CPDriverViewCarpool extends Component {
     constructor(props) {
         super(props);
     }
@@ -629,7 +631,7 @@ class CPDriverViewCarpool extends React.Component {
         );
     }
 }
-class CPDriverViewCarpoolParticipant extends React.Component {/*Reimplement drag and drop to support mobile*/
+class CPDriverViewCarpoolParticipant extends Component {/*Reimplement drag and drop to support mobile*/
     holdTime=300;//ms for press to register as drag
     constructor(props) {
         super(props);
@@ -816,7 +818,7 @@ class CPDriverViewCarpoolParticipant extends React.Component {/*Reimplement drag
 }
 
 
-class CPParticipantView extends React.Component {
+class CPParticipantView extends Component {
     constructor(props) {
         super(props);
         this.state={
@@ -942,7 +944,7 @@ function flatten(obj){
     });
     return(flattened);
 }
-class ParticipantPopup extends React.Component {
+class ParticipantPopup extends Component {
     constructor(props){
         super(props);
         console.log(props.participants,props.id);
@@ -1045,7 +1047,7 @@ class ParticipantPopup extends React.Component {
         )
     }
 }
-class CarpoolPopup extends React.Component {
+class CarpoolPopup extends Component {
     constructor(props){
         super(props);
         console.log(props.participants,props.id);
@@ -1143,7 +1145,7 @@ class CarpoolPopup extends React.Component {
         )
     }
 }
-class EventPopup extends React.Component {
+class EventPopup extends Component {
     constructor(props){
         super(props);
         if(props.newMode){
@@ -1259,7 +1261,7 @@ class EventPopup extends React.Component {
         )
     }
 }
-class App extends React.Component {
+class App extends Component {
     constructor(props){
         super(props);
         this.state={
@@ -1631,7 +1633,7 @@ class App extends React.Component {
     }
 }
 
-class PopupMessage extends React.Component {
+class PopupMessage extends Component {
     static error=0;
     static message=1;
     static warning=2;
@@ -1648,7 +1650,6 @@ class PopupMessage extends React.Component {
         </div>);
     }
 }
-
 ReactDOM.render(
     <App view=""/>,
     document.getElementById('root')
