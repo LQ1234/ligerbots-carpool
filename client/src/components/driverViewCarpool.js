@@ -29,22 +29,18 @@ class DriverViewCarpool extends Component {
             break;
             default:{
                 let carpool=props.carpools[props.for.carpoolId]
-                let driver=this.props.participants[carpool.driverId];
-                if(!driver){
-                    countInfo="Driverless"
-                    break;
-                }
-                if(driver.carpool.departing.type==3&&driver.carpool.departing.carpoolId==carpool.id){
-                    countInfo+=`${carpool.takenDeparting}/${carpool.seats}`
-                }else{
+                if(carpool.trip==1){
                     countInfo+="No Departing Trip"
+                }else{
+                    countInfo+=`${carpool.takenDeparting}/${carpool.seats}`
                 }
                 countInfo+=", "
-                if(driver.carpool.returning.type==3&&driver.carpool.returning.carpoolId==carpool.id){
-                    countInfo+=`${carpool.takenReturning}/${carpool.seats}`
-                }else{
+                if(carpool.trip==0){
                     countInfo+="No Returning Trip"
+                }else{
+                    countInfo+=`${carpool.takenReturning}/${carpool.seats}`
                 }
+
                 name=carpool.name;
             }
         }

@@ -353,18 +353,18 @@ class App extends Component {
                     case ParticipantPopup:{
                         if(!(this.state.shownPopup.id in this.state.participants))break;
                         let eventId=this.state.participants[this.state.shownPopup.id].eventId;
-                        popup=<ParticipantPopup popupMessageFunctions={this.popupMessageFunctions} hidePopup={this.hidePopup} availableCarpools={carpoolByEventWithCount[eventId]} participants={this.state.participants} id={this.state.shownPopup.id}/>
+                        popup=<ParticipantPopup popupMessageFunctions={this.popupMessageFunctions} showPopup={this.showPopup} hidePopup={this.hidePopup} availableCarpools={carpoolByEventWithCount[eventId]} carpools={this.state.carpools} participants={this.state.participants} id={this.state.shownPopup.id}/>
                         break;
                     }
                     case CarpoolPopup:{
                         if(!(this.state.shownPopup.id in this.state.carpools))break;
                         let eventId=this.state.carpools[this.state.shownPopup.id].eventId;
-                        popup=<CarpoolPopup popupMessageFunctions={this.popupMessageFunctions} hidePopup={this.hidePopup} carpools={this.state.carpools} id={this.state.shownPopup.id}/>
+                        popup=<CarpoolPopup popupMessageFunctions={this.popupMessageFunctions} showPopup={this.showPopup} hidePopup={this.hidePopup} carpools={this.state.carpools} participants={this.state.participants} id={this.state.shownPopup.id}/>
                         break;
                     }
                     case EventPopup:{
                         if((!this.state.shownPopup.newMode)&&!(this.state.shownPopup.id in this.state.events))break;
-                        popup=<EventPopup popupMessageFunctions={this.popupMessageFunctions} hidePopup={this.hidePopup} newMode={this.state.shownPopup.newMode} events={this.state.events} id={this.state.shownPopup.id}/>
+                        popup=<EventPopup popupMessageFunctions={this.popupMessageFunctions} showPopup={this.showPopup} hidePopup={this.hidePopup} newMode={this.state.shownPopup.newMode} events={this.state.events} id={this.state.shownPopup.id}/>
                         break;
                     }
                 }

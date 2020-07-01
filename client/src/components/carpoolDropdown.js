@@ -54,7 +54,7 @@ class CarpoolDropdown extends Component {
     render(){
         let selectedCarpool=this.props.selectedCarpools[this.props.isDepartingTrip?"departing":"returning"];
         let selectedCarpoolName="";
-        //0 for waitlist, 1 for parent, 2 for new carpool, 3 for existing carpool.
+        //0 for waitlist, 1 for parent, 3 for existing carpool.
         switch(selectedCarpool.type){
             case 0:
                 selectedCarpoolName="Waitlist";
@@ -93,11 +93,8 @@ class CarpoolDropdown extends Component {
                                     let seatsTaken=this.props.isDepartingTrip?carpoolObj.takenDeparting:carpoolObj.takenReturning;
                                     let classes=["selectorRow"];
 
-                                    let driver=this.props.participants[carpoolObj.driverId];
-                                    if(!driver){
-                                        return(<div className="selectorRow" key={carpoolObj.id}>?[err no driver]</div>)
-                                    }
-                                    let realSeats=(this.props.isDepartingTrip?(driver.carpool.departing.type==3&&driver.carpool.departing.carpoolId==carpoolObj.id):(driver.carpool.returning.type==3&&driver.carpool.returning.carpoolId==carpoolObj.id))?carpoolObj.seats:0;
+
+                                    let realSeats=(this.props.isDepartingTrip?(carpoolObj.trip!=1):(carpoolObj.trip!=0))?carpoolObj.seats:0;
                                     let disabled=seatsTaken>=realSeats;
                                     if(carpoolObj.id==selectedCarpool.carpoolId&&selectedCarpool.type==3)classes.push("selected");
                                     if(disabled)classes.push("disabled");
@@ -113,10 +110,6 @@ class CarpoolDropdown extends Component {
                             <a className={(selectedCarpool.type==0)?"selectorRow selected":"selectorRow"} onClick={()=>{this.props.selectedCarpoolsChangeHandler(this.props.isDepartingTrip,{type:0,carpoolId:-1});this.handleHide()}}>
                                 <div className="carpoolName">Waitlist</div>
                             </a>
-
-                            {this.props.includeNewCarpool?<a className={(selectedCarpool.type==2)?"selectorRow selected":"selectorRow"} onClick={()=>{this.props.selectedCarpoolsChangeHandler(this.props.isDepartingTrip,{type:2,carpoolId:-1});this.handleHide()}}>
-                                <div className="carpoolName">New Carpool</div>
-                            </a>:null}
                         </div>
                     </>:null
                 }

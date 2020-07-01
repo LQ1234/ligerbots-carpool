@@ -48,6 +48,7 @@ function init(con) {
               departingTime varchar(${settings.maxStrLen}) NOT NULL default "",
               returningTime varchar(${settings.maxStrLen}) NOT NULL default "",
               seats int NOT NULL default 4,
+              trip int NOT NULL,
               note varchar(${settings.maxStrLen}) NOT NULL default "",
               PRIMARY KEY  (id)
             ) CHARACTER SET utf8mb4;
@@ -64,6 +65,7 @@ function init(con) {
               carpool_departing_carpoolId int NOT NULL,
               carpool_returning_type int NOT NULL,
               carpool_returning_carpoolId int NOT NULL,
+              carpool_drivingCarpool int,
 
               eventId int NOT NULL,
 
@@ -71,7 +73,7 @@ function init(con) {
               personalInformation_email varchar(${settings.maxStrLen})  NOT NULL default "",
               personalInformation_number varchar(${settings.maxStrLen})  NOT NULL default "",
               personalInformation_note varchar(${settings.maxStrLen})  NOT NULL default "",
-              PRIMARY KEY  (id)
+              PRIMARY KEY (id)
             ) CHARACTER SET utf8mb4;
         `
         con.query(qry, (err) => {

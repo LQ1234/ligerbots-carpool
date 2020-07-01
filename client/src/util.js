@@ -25,6 +25,8 @@ export function shouldOpenInNewTab(e){
 }
 
 export function unflatten(flat_obj){
+    if(flat_obj==null||flat_obj==undefined)return flat_obj;
+
     let unflattened={};
     Object.keys(flat_obj).forEach((item, i) => {
         let keys=item.split("_");
@@ -41,9 +43,10 @@ export function unflatten(flat_obj){
 }
 
 export function flatten(obj){
+    if(obj==null||obj==undefined)return obj;
     let flattened={};
     Object.keys(obj).forEach((key, i) => {
-        if(typeof obj[key]=="object"&&!(obj[key] instanceof Date)){
+        if(typeof obj[key]=="object"&&!(obj[key] instanceof Date)&&!(obj[key]==undefined || obj[key]==null)){
             let flat_nest=flatten(obj[key]);
             Object.keys(flat_nest).forEach((nested_key, i) => {
                 flattened[key+"_"+nested_key]=flat_nest[nested_key]

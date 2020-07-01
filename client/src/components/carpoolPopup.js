@@ -1,10 +1,10 @@
 import React, {Component} from "react";
+import ParticipantPopup from "./participantPopup"
 import {deepClone,flatten,getTextOrReject} from "../util.js";
 
 class CarpoolPopup extends Component {
     constructor(props){
         super(props);
-        console.log("!!!", props.carpools);
         this.state={
             modified:deepClone(props.carpools[props.id])
         }
@@ -74,7 +74,18 @@ class CarpoolPopup extends Component {
         })
         .catch(this.props.popupMessageFunctions.generateServerErrorPopupMessage);
     }
+    participantPressed=()=>{
+        this.props.showPopup({
+            view: ParticipantPopup,
+            id:this.props.carpools[this.props.id].driverId
+        });
+    }
     render(){
+        let driverId=this.props.carpools[this.props.id].driverId;
+        let driver=null;
+        if(driverId in this.props.participants){
+            driver=this.props.participants[driverId];
+        }
         return(
             <>
                 <div className="popup-wrapper" onClick={this.handleHide}>
@@ -86,6 +97,9 @@ class CarpoolPopup extends Component {
                             <label><span>Return Time: </span><input name="returningTime" value={this.state.modified.returningTime} onChange={this.handleCarpoolChange}/></label>
                             <label><span>Seats: </span><input type="number" name="seats" value={this.state.modified.seats} onChange={this.handleCarpoolChange}/>  (Include Driver)</label>
                             <label><span>Note: </span><br/><textarea name="note" value={this.state.modified.note} onChange={this.handleCarpoolChange}/></label>
+                        </div>
+                        <div>
+                            Driver: <span className="imbeddedParticipant" onClick={this.participantPressed}>{driver.personalInformation.name}</span>
                         </div>
                         <button type="button" name="button" onClick={this.saveClicked}>Save</button>
                         &emsp;

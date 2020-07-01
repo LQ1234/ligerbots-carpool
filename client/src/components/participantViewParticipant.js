@@ -39,9 +39,8 @@ class ParticipantViewParticipant extends React.Component {
                 return("Waitlist");
             case 1:
                 return("Parent");
-            case 2:
-                return("New Carpool");
-                break;
+            case 4:
+                return("");
             default:
                 let carpool=Object.values(this.props.carpools).find((c)=>c.id==carpoolId);
                 return(carpool?carpool.name:"<Invalid carpool>")
@@ -50,7 +49,7 @@ class ParticipantViewParticipant extends React.Component {
 
     render(){
         return(<Fragment key={this.props.id}>
-            <div onClick={this.participantPressed}>{this.props.personalInformation.name}</div>
+            <div className={"participantViewParticipant"+(this.props.carpool.drivingCarpool!=null?" driver":"")} onClick={this.participantPressed}>{this.props.personalInformation.name}</div>
             <div onClick={this.departingCarpoolPressed}>{this.nameOfCarpool(this.props.carpool.departing)}</div>
             <div onClick={this.returningCarpoolPressed}>{this.nameOfCarpool(this.props.carpool.returning)}</div>
         </Fragment>)

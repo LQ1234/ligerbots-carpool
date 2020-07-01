@@ -61,7 +61,7 @@ class EventListEvent extends Component {
                     </div>
 
                     <div className="buttons">
-                        <button type="button" name="button" onClick={this.addClicked}>Add Participant/Carpool</button><br/>
+                        <button type="button" name="button" onClick={this.addClicked}>Add Participant/Driver</button><br/>
                         <button type="button" name="button" onClick={this.driverViewClicked}>Driver View</button><br/>
                         <button type="button" name="button" onClick={this.participantViewClicked}>Participant View</button><br/>
                         <button type="button" name="button" onClick={this.editClicked}>Edit</button><br/>

@@ -26,7 +26,7 @@ function cleanUserInput(usrinp, fields) { //-> null or obj with fields
         let prop=fields[i];
         if (usrinp.hasOwnProperty(prop)) {
             let value=usrinp[prop];
-            if(typeof value == "string" || typeof value == "number"){
+            if(typeof value == "string" || typeof value == "number" || typeof value == "boolean"){
                 res[prop] = value;
             }else{
                 return(null);
@@ -100,6 +100,41 @@ function query(qry,args){
         });
     });
 }
+
+function unflatten(flat_obj){
+    if(flat_obj==null||flat_obj==undefined)return flat_obj;
+
+    let unflattened={};
+    Object.keys(flat_obj).forEach((item, i) => {
+        let keys=item.split("_");
+        let layer=unflattened;
+        for (var i = 0; i < keys.length-1; i++) {
+            if(!(keys[i] in layer)){
+                layer[keys[i]]={};
+            }
+            layer=layer[keys[i]];
+        }
+        layer[keys[keys.length-1]]=flat_obj[item];
+    });
+    return(unflattened);
+}
+
+function flatten(obj){
+    if(obj==null||obj==undefined)return obj;
+    let flattened={};
+    Object.keys(obj).forEach((key, i) => {
+        if(typeof obj[key]=="object"&&!(obj[key] instanceof Date)&&!(obj[key]==undefined || obj[key]==null)){
+            let flat_nest=flatten(obj[key]);
+            Object.keys(flat_nest).forEach((nested_key, i) => {
+                flattened[key+"_"+nested_key]=flat_nest[nested_key]
+            });
+        }else{
+            flattened[key]=obj[key];
+        }
+    });
+    return(flattened);
+}
+
 function countPeopleInCarpool(carpoolId,isDepartingTrip){
     return query(isDepartingTrip?
         "SELECT * FROM participants WHERE (carpool_departing_type = 3 AND carpool_departing_carpoolId = ?)":
@@ -253,60 +288,78 @@ app.get("/api/carpools", async (req, response) => {
 
 app.post("/api/add-carpool-or-participant",async (req, response) => {
     try {
-        let carpoolReq=cleanUserInput(req.body,["eventId","name","origin","departingTime","returningTime","seats","note"]);
-        let participantReq=cleanUserInput(req.body,["eventId","carpool_departing_type","carpool_departing_carpoolId","carpool_returning_type","carpool_returning_carpoolId","personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"]);
+        let carpoolReq=cleanUserInput(req.body,["eventId","name","origin","departingTime","returningTime","seats","note","trip"]);
+        let participantReq=cleanUserInput(req.body,["eventId","carpool_departing_type","carpool_departing_carpoolId","carpool_returning_type","carpool_returning_carpoolId","carpool_isDriver","personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"]);
         if(participantReq==null){
             let errRes={"result":"failure","error":"Bad Request"}
             response.send(JSON.stringify(errRes));
             return;
         }
-        if(!ensureInboundStrings(participantReq,["personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"])||!ensureInboundNumbers(participantReq,["eventId","carpool_departing_carpoolId","carpool_returning_carpoolId"])||!ensureInboundNumbers(participantReq,["carpool_departing_type","carpool_returning_type"],0,3)){
-            let errRes={"result":"failure","error":"Bad Request"}
+        if(!ensureInboundStrings(participantReq,["personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"])||!ensureInboundNumbers(participantReq,["eventId","carpool_departing_carpoolId","carpool_returning_carpoolId"])||!ensureInboundNumbers(participantReq,["carpool_departing_type","carpool_returning_type"],0,4)){
+            let errRes={"result":"failure","error":"Bad Request (strings)"}
             response.send(JSON.stringify(errRes));
             return;
         }
         //add the participant first
         //0 for waitlist, 1 for parent, 2 for new carpool, 3 for existing carpool.
+        let {carpool_isDriver,...processedParticipantReq}=participantReq;
+        if(carpool_isDriver){
+            processedParticipantReq.carpool_drivingCarpool=-1;
+        }else{
+            processedParticipantReq.carpool_drivingCarpool=null;
+        }
+        console.log("!!!!",processedParticipantReq);
 
-        if(participantReq.carpool_departing_type==2||participantReq.carpool_returning_type==2){
+        if(carpool_isDriver){
             if(carpoolReq==null){//new carpool but carpool not supplied
-                let errRes={"result":"failure","error":"Bad Request"}
+                let errRes={"result":"failure","error":"Bad Request (carpool)"}
                 response.send(JSON.stringify(errRes));
                 return;
             }
-            if(!ensureInboundStrings(carpoolReq,["name","origin","departingTime","returningTime","note"])||!ensureInboundNumbers(carpoolReq,["eventId"])||!ensureInboundNumbers(carpoolReq,["seats"],1,200)){
-                let errRes={"result":"failure","error":"Bad Request"}
+            if(!ensureInboundStrings(carpoolReq,["name","origin","departingTime","returningTime","note"])||!ensureInboundNumbers(carpoolReq,["eventId"])||!ensureInboundNumbers(carpoolReq,["seats"],1,200)||!ensureInboundNumbers(carpoolReq,["trip"],0,2)){
+                let errRes={"result":"failure","error":"Bad Request (carpool, strings)"}
+                response.send(JSON.stringify(errRes));
+                return;
+            }
+
+
+        }else{
+            //check if carpool has space
+            if(!(await carpoolCanAcceptMoreParticipants({carpoolId:participantReq.carpool_departing_carpoolId,type:participantReq.carpool_departing_type},true))){
+                let errRes={"result":"failure","error":"No Space"}
+                response.send(JSON.stringify(errRes));
+                return;
+            }
+
+            if(!(await carpoolCanAcceptMoreParticipants({carpoolId:participantReq.carpool_returning_carpoolId,type:participantReq.carpool_returning_type},false))){
+                let errRes={"result":"failure","error":"No Space"}
                 response.send(JSON.stringify(errRes));
                 return;
             }
         }
-        //check if carpool has space
-        if(!(await carpoolCanAcceptMoreParticipants({carpoolId:participantReq.carpool_departing_carpoolId,type:participantReq.carpool_departing_type},true))){
-            let errRes={"result":"failure","error":"No Space"}
-            response.send(JSON.stringify(errRes));
-            return;
-        }
 
-        if(!(await carpoolCanAcceptMoreParticipants({carpoolId:participantReq.carpool_returning_carpoolId,type:participantReq.carpool_returning_type},false))){
-            let errRes={"result":"failure","error":"No Space"}
-            response.send(JSON.stringify(errRes));
-            return;
-        }
+        let {insertId:participantId}=await query("INSERT INTO participants SET ?", {...processedParticipantReq,});
 
-        let {insertId:participantId}=await query("INSERT INTO participants SET ?", {...participantReq});
-
-        if(participantReq.carpool_departing_type==2||participantReq.carpool_returning_type==2){//add the carpool
+        if(participantReq.carpool_isDriver){//add the carpool
             let {insertId:carpoolId}=await query("INSERT INTO carpools SET ?",{...carpoolReq,driverId:participantId});
             //update the participant"s carpools id to match the new one
             let updates={}
-            if(participantReq.carpool_departing_type==2){
+            if(carpoolReq.trip==0||carpoolReq.trip==2){
                 updates["carpool_departing_type"]=3;
                 updates["carpool_departing_carpoolId"]=carpoolId;
+            }else{
+                updates["carpool_departing_type"]=4;
+                updates["carpool_departing_carpoolId"]=-1;
             }
-            if(participantReq.carpool_returning_type==2){
+            if(carpoolReq.trip==1||carpoolReq.trip==2){
                 updates["carpool_returning_type"]=3;
                 updates["carpool_returning_carpoolId"]=carpoolId;
+            }else{
+                updates["carpool_returning_type"]=4;
+                updates["carpool_returning_carpoolId"]=-1;
             }
+            updates["carpool_drivingCarpool"]=carpoolId
+
             await query("UPDATE participants SET ? WHERE id = ?",[updates,participantId]);
 
             response.send(JSON.stringify({result:"success"}));
@@ -402,7 +455,7 @@ app.post("/api/edit-participant", async (req, response) => {
             response.send(JSON.stringify(errRes));
             return;
         }
-        if(!ensureInboundStrings(cleanReq,["personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"])||!ensureInboundNumbers(cleanReq,["id","carpool_departing_carpoolId","carpool_returning_carpoolId"])||!ensureInboundNumbers(cleanReq,["carpool_departing_type","carpool_returning_type"],0,3)){
+        if(!ensureInboundStrings(cleanReq,["personalInformation_name","personalInformation_email","personalInformation_number","personalInformation_note"])||!ensureInboundNumbers(cleanReq,["id","carpool_departing_carpoolId","carpool_returning_carpoolId"])||!ensureInboundNumbers(cleanReq,["carpool_departing_type","carpool_returning_type"],0,4)){
             let errRes={"result":"failure","error":"Bad Request"}
             response.send(JSON.stringify(errRes));
             return;
@@ -426,7 +479,7 @@ app.post("/api/edit-participant", async (req, response) => {
                     return;
                 }
             }
-            if(carpool&&previousState.carpool_departing_carpoolId==carpool.id&&previousState.carpool_departing_type==3){
+            if(carpool){
                 let errRes={"result":"failure","error":"Cannot move driver"}
                 response.send(JSON.stringify(errRes));
                 return;
@@ -440,7 +493,7 @@ app.post("/api/edit-participant", async (req, response) => {
                     return;
                 }
             }
-            if(carpool&&previousState.carpool_returning_carpoolId==carpool.id&&previousState.carpool_returning_type==3){
+            if(carpool){
                 let errRes={"result":"failure","error":"Cannot move driver"}
                 response.send(JSON.stringify(errRes));
                 return;

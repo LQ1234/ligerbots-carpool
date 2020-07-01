@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import CarpoolDropdown from "./carpoolDropdown";
+import CarpoolPopup from "./carpoolPopup";
 import {deepClone,flatten,getTextOrReject} from "../util.js";
 
 class ParticipantPopup extends Component {
@@ -78,7 +79,18 @@ class ParticipantPopup extends Component {
         })
         .catch(this.props.popupMessageFunctions.generateServerErrorPopupMessage);
     }
+    carpoolPressed=()=>{
+        this.props.showPopup({
+            view: CarpoolPopup,
+            id:this.props.participants[this.props.id].carpool.drivingCarpool
+        });
+    }
     render(){
+        let drivingCarpoolId=this.props.participants[this.props.id].carpool.drivingCarpool;
+        let drivingCarpool=null;
+        if(drivingCarpoolId in this.props.carpools){
+            drivingCarpool=this.props.carpools[drivingCarpoolId];
+        }
         return(
             <>
                 <div className="popup-wrapper" onClick={this.handleHide}>
@@ -89,11 +101,17 @@ class ParticipantPopup extends Component {
                             <label><span>Number: </span><input name="number" value={this.state.modified.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
                             <label><span>Note: </span><br/><textarea name="note" value={this.state.modified.personalInformation.note} onChange={this.handlePersonalInformationChange}/></label>
                         </div>
-                        <div style={{"marginBottom":".5em"}}>
-                            Departing Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={true} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
-                            &emsp;
-                            Returning Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={false} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
-                        </div>
+                        {
+                            drivingCarpool?
+                            <div>
+                                Driver for <span className="imbeddedCarpool" onClick={this.carpoolPressed}>{drivingCarpool.name}</span>
+                            </div>:
+                            <div style={{"marginBottom":".5em"}}>
+                                Departing Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={true} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
+                                &emsp;
+                                Returning Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={false} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
+                            </div>
+                        }
                         <button type="button" name="button" onClick={this.saveClicked}>Save</button>
                         &emsp;
                         <button type="button" name="button" onClick={this.cancelClicked}>Cancel</button>
