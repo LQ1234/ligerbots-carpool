@@ -19,12 +19,18 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
     },
     module: {
-        rules: [{
-            test: /\.(js|jsx)$/,
-            include: path.resolve(__dirname, 'src'),
-            use: {
-                loader: 'babel-loader'
-            }
-        }]
+        rules: [
+            {
+                test: /\.(js|jsx)$/,
+                include: path.resolve(__dirname, 'src'),
+                use: {
+                    loader: 'babel-loader'
+                }
+            },
+            {
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader'],
+            },
+        ]
     },
 };

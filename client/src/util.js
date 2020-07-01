@@ -43,7 +43,7 @@ export function unflatten(flat_obj){
 export function flatten(obj){
     let flattened={};
     Object.keys(obj).forEach((key, i) => {
-        if(typeof obj[key]=="object"){
+        if(typeof obj[key]=="object"&&!(obj[key] instanceof Date)){
             let flat_nest=flatten(obj[key]);
             Object.keys(flat_nest).forEach((nested_key, i) => {
                 flattened[key+"_"+nested_key]=flat_nest[nested_key]
@@ -53,4 +53,11 @@ export function flatten(obj){
         }
     });
     return(flattened);
+}
+
+export function eventWithRealDate(carpool){
+    return({...carpool,date:new Date(carpool.date)});
+}
+export function eventWithStringDate(carpool){
+    return({...carpool,date:carpool.date.toISOString()});
 }

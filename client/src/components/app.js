@@ -8,7 +8,7 @@ import DriverView from "./driverView";
 import AddForm from "./addForm";
 import EventList from "./eventList";
 
-import {shouldOpenInNewTab,unflatten,flatten} from "../util.js";
+import {shouldOpenInNewTab,unflatten,flatten,objectFilter,eventWithRealDate} from "../util.js";
 
 
 class App extends Component {
@@ -55,13 +55,14 @@ class App extends Component {
                 return{
                     ...state,
                     receivedResponse:true,
-                    events:{...state.events,...res[0].events.reduce((b,a)=>({...b,[a.id]:unflatten(a)}),{})},
+                    events:{...state.events,...res[0].events.reduce((b,a)=>({...b,[a.id]:eventWithRealDate(unflatten(a))}),{})},
                     carpools:{...state.carpools,...res[1].carpools.reduce((b,a)=>({...b,[a.id]:unflatten(a)}),{})},
                     participants:{...state.participants,...res[2].participants.reduce((b,a)=>({...b,[a.id]:unflatten(a)}),{})}
                 }
             })
         });
         var evtSource = new EventSource('api/update-stream');
+
         evtSource.addEventListener("put-event", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
             this.setState((state)=>{
@@ -69,7 +70,7 @@ class App extends Component {
                     ...state,
                     events:{
                         ...state.events,
-                        [parsed.id]:parsed
+                        [parsed.id]:eventWithRealDate(parsed)
                     }
                 })
             });
@@ -321,8 +322,8 @@ class App extends Component {
             <div>Invalid Event</div>
             <button type="button" name="button" onClick={this.goToEvents}>Go back</button>
         </>;
-
         if(this.state.receivedResponse){
+
             switch (this.state.view) {
                 case "event-list":{
                     elem=<EventList popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={eventsWithStats}/>;

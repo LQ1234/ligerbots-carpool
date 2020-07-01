@@ -1,9 +1,12 @@
 import React, {Component} from "react";
-import {deepClone,flatten,getTextOrReject} from "../util.js";
+import {deepClone,flatten,getTextOrReject,eventWithStringDate} from "../util.js";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 class EventPopup extends Component {
     constructor(props){
         super(props);
+        console.log("!!!",props.events[props.id]);
         if(props.newMode){
             this.state={
                 modified:{
@@ -11,7 +14,7 @@ class EventPopup extends Component {
                     note:"",
                     defaultDepartingTime: "",
                     defaultReturningTime: "",
-                    date: "",
+                    date: new Date(),
                 }
             }
         }else{
@@ -19,8 +22,8 @@ class EventPopup extends Component {
                 modified:deepClone(props.events[props.id])
             }
         }
+        console.log("!!!",this.state);
 
-        console.log(this.state);
     }
     handleChange=(event) => {
         let target=event.target;
@@ -30,7 +33,14 @@ class EventPopup extends Component {
                 [target.name]: target.value
             }
         });
-        console.log(this.state);
+    }
+    handleDateChange=(newDate) => {
+        this.setState({
+            modified:{
+                ...this.state.modified,
+                date: newDate
+            }
+        });
     }
     handleHide=(e)=>{
         if(e.currentTarget===e.target){//ensure non child clicked
@@ -41,7 +51,7 @@ class EventPopup extends Component {
         this.props.hidePopup();
     }
     saveClicked=()=>{
-        let req=flatten({id:this.props.id,...this.state.modified})
+        let req=flatten({id:this.props.id,...eventWithStringDate(this.state.modified)})
         console.log(req);
         fetch('api/edit-event', {
             method: 'POST',
@@ -59,7 +69,7 @@ class EventPopup extends Component {
 
     }
     addClicked=()=>{
-        let req=flatten({...this.state.modified})
+        let req=flatten({...eventWithStringDate(this.state.modified)})
         console.log(req);
         fetch('api/add-event', {
             method: 'POST',
@@ -103,7 +113,7 @@ class EventPopup extends Component {
                             <input name="title" value={this.state.modified.title} className="title" onChange={this.handleChange}/>
                             <label><span>Default Departing Time</span> <input name="defaultDepartingTime" value={this.state.modified.defaultDepartingTime} onChange={this.handleChange}/></label>
                             <label><span>Default Returning Time</span> <input name="defaultReturningTime" value={this.state.modified.defaultReturningTime} onChange={this.handleChange}/></label>
-                            <label><span>Date</span> <input name="date" value={this.state.modified.date} onChange={this.handleChange}/></label>
+                            <label><span>Date</span> <DatePicker selected={this.state.modified.date} onChange={this.handleDateChange}/></label>
                             <textarea className="note" name="note" value={this.state.modified.note} onChange={this.handleChange}/>
                         </div>
                         {this.props.newMode?<button type="button" name="button" onClick={this.addClicked}>Add</button>:<button type="button" name="button" onClick={this.saveClicked}>Save</button>}

@@ -1,6 +1,7 @@
 import React, {Component} from "react";
 import {shouldOpenInNewTab} from "../util.js";
 import EventPopup from "./eventPopup";
+import moment from 'moment';
 
 class EventListEvent extends Component {
     constructor(props){
@@ -34,12 +35,12 @@ class EventListEvent extends Component {
                     {this.props.title}
                     <span className="date">
                         {eventMoment.calendar({
-                            sameDay: '[Today]',
-                            nextDay: '[Tomorrow]',
-                            nextWeek: 'dddd',
-                            lastDay: '[Yesterday]',
-                            lastWeek: '[Last] dddd',
-                            sameElse: 'DD/MM/YYYY'
+                            sameDay: "[Today]",
+                            nextDay: "[Tomorrow]",
+                            nextWeek: "dddd",
+                            lastDay: "[Yesterday]",
+                            lastWeek: "[Last] dddd",
+                            sameElse: "MMMM Do, YYYY"
                         })}
                     </span>
                 </div>

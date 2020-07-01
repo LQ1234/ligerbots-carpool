@@ -18,7 +18,7 @@ class EventList extends Component {
                 <div className="title">Events</div>
                 <div id="events">
                     {
-                        Object.values(this.props.events).map((eventObj) =>
+                        Object.values(this.props.events).sort((a,b)=>a.date.getTime()-b.date.getTime()).map((eventObj) =>
                             <EventListEvent popupMessageFunctions={this.props.popupMessageFunctions} showPopup={this.props.showPopup} changeView={this.props.changeView} {...eventObj} key={eventObj.id}/>
                         )
                     }
