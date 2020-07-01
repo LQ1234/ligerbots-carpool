@@ -4,11 +4,10 @@ import {deepClone,flatten,getTextOrReject} from "../util.js";
 class CarpoolPopup extends Component {
     constructor(props){
         super(props);
-        console.log(props.participants,props.id);
+        console.log("!!!", props.carpools);
         this.state={
             modified:deepClone(props.carpools[props.id])
         }
-        console.log(this.state);
     }
     handleCarpoolChange=(event) => {
         let target=event.target;

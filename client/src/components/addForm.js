@@ -26,8 +26,8 @@ class AddForm extends Component {
             newCarpool:{
                 name: "",
                 origin: "",
-                departingTime: "",
-                returningTime: "",
+                departingTime: props.events[props.eventId].defaultDepartingTime||"",
+                returningTime: props.events[props.eventId].defaultReturningTime||"",
                 seats: 4,
                 note: ""
             },

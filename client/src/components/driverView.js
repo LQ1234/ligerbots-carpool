@@ -127,7 +127,7 @@ class DriverView extends Component {
                     {
                         Object.keys(this.props.carpools).map((a)=>{
                             return(
-                                <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={a} for={{type: 3,carpoolId: a}} containingDeparting={idByDepartingCarpool[a]||[]} containingReturning={idByReturningCarpool[a]||[]} participants={this.props.participants} carpools={this.props.carpools} />
+                                <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={a} for={{type: 3,carpoolId: this.props.carpools[a].id}} containingDeparting={idByDepartingCarpool[a]||[]} containingReturning={idByReturningCarpool[a]||[]} participants={this.props.participants} carpools={this.props.carpools} />
                             );
                         })
                     }
