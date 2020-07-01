@@ -435,7 +435,7 @@ body{
     min-height: 1em;
 
     left:50%;
-    position: absolute;
+    position: fixed;
     transform: translate(-50%, 0%);
     z-index: 200;
 
