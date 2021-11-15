@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import CarpoolDropdown from "./carpoolDropdown";
 import EventPopup from "./eventPopup";
-import {flatten,getTextOrReject} from "../util.js";
+import {flatten,getTextOrReject,api_root} from "../util.js";
 
 class AddForm extends Component {
     constructor(props) {
@@ -111,7 +111,7 @@ class AddForm extends Component {
             carpool:this.state.carpool,
             ...this.state.newCarpool
         });
-        fetch('api/add-carpool-or-participant', {
+        fetch(api_root+'add-carpool-or-participant', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

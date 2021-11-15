@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import CarpoolDropdown from "./carpoolDropdown";
 import CarpoolPopup from "./carpoolPopup";
-import {deepClone,flatten,getTextOrReject} from "../util.js";
+import {deepClone,flatten,getTextOrReject,api_root} from "../util.js";
 
 class ParticipantPopup extends Component {
     constructor(props){
@@ -48,7 +48,7 @@ class ParticipantPopup extends Component {
     saveClicked=()=>{
         let req=flatten({id:this.props.id,...this.state.modified})
         console.log(req);
-        fetch('api/edit-participant', {
+        fetch(api_root+'edit-participant', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ class ParticipantPopup extends Component {
     deleteClicked=()=>{
         let req=flatten({id:this.props.id})
 
-        fetch('api/delete-participant', {
+        fetch(api_root+'delete-participant', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -94,30 +94,38 @@ class ParticipantPopup extends Component {
         return(
             <>
                 <div className="popup-wrapper" onClick={this.handleHide}>
-                    <div className="popup" >
-                        <div className="infoGrid">
-                            <label><span>Name: </span><input name="name" value={this.state.modified.personalInformation.name} onChange={this.handlePersonalInformationChange}/></label>
-                            <label><span>Email: </span><input name="email" value={this.state.modified.personalInformation.email} onChange={this.handlePersonalInformationChange}/></label>
-                            <label><span>Number: </span><input name="number" value={this.state.modified.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
-                            <label><span>Note: </span><br/><textarea name="note" value={this.state.modified.personalInformation.note} onChange={this.handlePersonalInformationChange}/></label>
+                    <div className="popup-container">
+                        <div className="title" >
+                        Editing {drivingCarpool?"Driver":"Passenger"}
                         </div>
-                        {
-                            drivingCarpool?
-                            <div>
-                                Driver for <span className="imbeddedCarpool" onClick={this.carpoolPressed}>{drivingCarpool.name}</span>
-                            </div>:
-                            <div style={{"marginBottom":".5em"}}>
-                                Departing Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={true} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
-                                &emsp;
-                                Returning Trip: <CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={false} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/>
+                        <div className="popup" >
+
+
+                            <div className="infoGrid">
+                                <label><span>Name: </span><input name="name" value={this.state.modified.personalInformation.name} onChange={this.handlePersonalInformationChange}/></label>
+                                <label><span>Email: </span><input name="email" value={this.state.modified.personalInformation.email} onChange={this.handlePersonalInformationChange}/></label>
+                                <label><span>Number: </span><input name="number" value={this.state.modified.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
+                                {
+                                    drivingCarpool?
+                                        <div>
+                                            Driver for <span className="imbeddedCarpool" onClick={this.carpoolPressed}>{drivingCarpool.name}</span>
+                                        </div>
+                                    :
+                                        <>
+                                            <label><span>Departing Trip: </span><CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={true} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/></label>
+                                            <label><span>Returning Trip:</span><CarpoolDropdown includeNewCarpool={false} participants={this.props.participants} isDepartingTrip={false} availableCarpools={this.props.availableCarpools} selectedCarpools={this.state.modified.carpool} selectedCarpoolsChangeHandler={this.handleCarpoolsChange}/></label>
+                                        </>
+                                }
+                                <label><span>Note: </span><br/><textarea name="note" value={this.state.modified.personalInformation.note} onChange={this.handlePersonalInformationChange}/></label>
                             </div>
-                        }
-                        <button type="button" name="button" onClick={this.saveClicked}>Save</button>
-                        &emsp;
-                        <button type="button" name="button" onClick={this.cancelClicked}>Cancel</button>
-                        &emsp;
-                        <button type="button" name="button" onClick={this.deleteClicked}>Delete</button>
+                            <button type="button" name="button" onClick={this.saveClicked}>Save</button>
+                            &emsp;
+                            <button type="button" name="button" onClick={this.cancelClicked}>Cancel</button>
+                            &emsp;
+                            <button type="button" name="button" onClick={this.deleteClicked}>Delete</button>
+                        </div>
                     </div>
+
                 </div>
             </>
         )

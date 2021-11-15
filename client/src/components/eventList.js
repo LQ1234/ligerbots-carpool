@@ -13,13 +13,19 @@ class EventList extends Component {
         });
     }
     render() {
+        console.log("!@!",this.props.participants)
         return(
             <>
-                <div className="title">Events</div>
                 <div id="events">
                     {
                         Object.values(this.props.events).sort((a,b)=>a.date.getTime()-b.date.getTime()).map((eventObj) =>
-                            <EventListEvent popupMessageFunctions={this.props.popupMessageFunctions} showPopup={this.props.showPopup} changeView={this.props.changeView} {...eventObj} key={eventObj.id}/>
+                            <EventListEvent
+                                popupMessageFunctions={this.props.popupMessageFunctions}
+                                showPopup={this.props.showPopup}
+                                changeView={this.props.changeView}
+                                participants={this.props.allParticipants[eventObj.id]}
+                                carpools={this.props.allCarpools[eventObj.id]}
+                                {...eventObj} key={eventObj.id}/>
                         )
                     }
                 </div>

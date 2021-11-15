@@ -9,7 +9,8 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
             dragpos:{
                 x:0,
                 y:0
-            }
+            },
+            dragging: false
         }
         this.startDragPos={
 
@@ -20,13 +21,19 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
     removeMouseListeners(){
         window.removeEventListener("mouseup", this.mouseUpListener)
         window.removeEventListener("mousemove", this.mouseMoveListener)
+        window.removeEventListener("contextmenu", this.contextMenuListener)
+
     }
     addMouseListeners(){
         window.addEventListener("mouseup", this.mouseUpListener)
         window.addEventListener("mousemove", this.mouseMoveListener)
+        window.addEventListener("contextmenu", this.contextMenuListener, {passive: false})
     }
 
     mouseDownListener=(e)=>{
+        console.log(e.buttons);
+
+        if(!(e.buttons&1) || this.state.dragging)return;
         this.removeMouseListeners();
         this.startDragPos.x=e.pageX;
         this.startDragPos.y=e.pageY;
@@ -39,36 +46,46 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
             dragpos: {
                 x:e.pageX-this.startDragPos.x,
                 y:e.pageY-this.startDragPos.y
-            }
+            },
+            dragging:true
         });
         this.dropMoveHandler(e.clientX,e.clientY);
     }
     mouseUpListener=(e)=>{
-        if(this.state.dragpos.x==0&&this.state.dragpos.y==0){
+        console.log(e.buttons);
+        if(e.buttons&1)return;
+
+        if(!this.state.dragging){
             this.clickListener();
         }else{
             this.setState({
                 dragpos: {
                     x:0,
                     y:0
-                }
+                },
+                dragging: false
             });
             this.dropEndHandler();
         }
 
         this.removeMouseListeners();
     }
+    contextMenuListener=(e)=>{
+        e.preventDefault();
+    }
     removeTouchListeners(){
         window.removeEventListener("touchend", this.touchEndListener)
         window.removeEventListener("touchmove", this.touchMoveListener)
+        window.removeEventListener("contextmenu", this.contextMenuListener)
     }
     addTouchListeners(){
-        window.addEventListener("touchend", this.touchEndListener, {passive: true})
-        window.addEventListener("touchmove", this.touchMoveListener, {passive: true})
+        window.addEventListener("touchend", this.touchEndListener, {passive: false})
+        window.addEventListener("touchmove", this.touchMoveListener, {passive: false})
+        window.addEventListener("contextmenu", this.contextMenuListener, {passive: false})
     }
-    touchStartListener=(e)=>{
-        e.preventDefault();
 
+    touchStartListener=(e)=>{
+        console.log("touchstart");
         this.removeTouchListeners();
         this.startDragPos.x=e.touches[0].pageX;
         this.startDragPos.y=e.touches[0].pageY;
@@ -78,13 +95,17 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
             this.setState({
                 dragpos: {
                     x:0,
-                    y:.00001
-                }
+                    y:0
+                },
+                dragging: true
             });
             this.dropStartHandler();
          },this.holdTime);
+
     }
     touchMoveListener=(e)=>{
+        console.log("touchmove");
+
         if(performance.now()-this.holdStart>this.holdTime){
             e.preventDefault();
 
@@ -111,6 +132,8 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
         }
     }
     touchEndListener=(e)=>{
+        console.log("touchend");
+
         clearTimeout(this.holdTimeout)
         if(performance.now()-this.holdStart<this.holdTime){
             this.clickListener();
@@ -123,7 +146,8 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
             dragpos: {
                 x:0,
                 y:0
-            }
+            },
+            dragging:false
         });
         this.removeTouchListeners();
 
@@ -156,6 +180,7 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
     }
     componentWillUnmount() {
         this.div.current.removeEventListener("touchstart", this.touchStartListener)
+
     }
 
     clickListener = ()=>{
@@ -177,11 +202,11 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
         return(
             <div
                 ref={this.div}
-                className={"carpoolParticipant draggable"+(this.props.isDriver?" driver":"")+(this.state.dragpos.x==0&&this.state.dragpos.y==0?"":" dragging")}
+                className={"carpoolParticipant  draggable"+(this.props.isDriver?" driver":"")+(this.state.dragging?" dragging":"")}
                 onMouseDown={this.mouseDownListener}
                 style={{"top":`${this.state.dragpos.y}px`,"left":`${this.state.dragpos.x}px`}}
             >
-                {this.props.participant.personalInformation.name}
+                <div className={"carpoolParticipantText"+(this.state.dragging?"":" showeditsymbol")}>{"•\u00A0"+this.props.participant.personalInformation.name}</div>
             </div>
         );
     }

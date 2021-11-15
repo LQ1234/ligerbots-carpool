@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import ParticipantPopup from "./participantPopup"
-import {deepClone,flatten,getTextOrReject} from "../util.js";
+import {deepClone,flatten,getTextOrReject,api_root} from "../util.js";
 
 class CarpoolPopup extends Component {
     constructor(props){
@@ -43,7 +43,7 @@ class CarpoolPopup extends Component {
     saveClicked=()=>{
         let req=flatten({id:this.props.id,...this.state.modified})
         console.log(req);
-        fetch('api/edit-carpool', {
+        fetch(api_root+'edit-carpool', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -60,7 +60,7 @@ class CarpoolPopup extends Component {
     deleteClicked=()=>{
         let req=flatten({id:this.props.id})
 
-        fetch('api/delete-carpool', {
+        fetch(api_root+'delete-carpool', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

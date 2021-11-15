@@ -64,3 +64,4 @@ export function eventWithRealDate(carpool){
 export function eventWithStringDate(carpool){
     return({...carpool,date:carpool.date.toISOString()});
 }
+export const api_root = "https://priv.larrys.tech/carpool/api/";

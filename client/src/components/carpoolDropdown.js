@@ -48,10 +48,12 @@ class CarpoolDropdown extends Component {
         this.setState({isOpen: true});
     }
     handleHide = (event)=>{
+        console.log("hide!");
         this.setState({isOpen: false});
     }
 
     render(){
+        console.log(this.state);
         let selectedCarpool=this.props.selectedCarpools[this.props.isDepartingTrip?"departing":"returning"];
         let selectedCarpoolName="";
         //0 for waitlist, 1 for parent, 3 for existing carpool.

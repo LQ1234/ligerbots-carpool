@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import {deepClone,flatten,getTextOrReject,eventWithStringDate} from "../util.js";
+import {deepClone,flatten,getTextOrReject,eventWithStringDate,api_root} from "../util.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -53,7 +53,7 @@ class EventPopup extends Component {
     saveClicked=()=>{
         let req=flatten({id:this.props.id,...eventWithStringDate(this.state.modified)})
         console.log(req);
-        fetch('api/edit-event', {
+        fetch(api_root+'edit-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ class EventPopup extends Component {
     addClicked=()=>{
         let req=flatten({...eventWithStringDate(this.state.modified)})
         console.log(req);
-        fetch('api/add-event', {
+        fetch(api_root+'add-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ class EventPopup extends Component {
     deleteClicked=()=>{
         let req=flatten({id:this.props.id})
 
-        fetch('api/delete-event', {
+        fetch(api_root+'delete-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
