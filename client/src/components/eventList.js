@@ -13,7 +13,6 @@ class EventList extends Component {
         });
     }
     render() {
-        console.log("!@!",this.props.participants)
         return(
             <>
                 <div id="events">
@@ -25,13 +24,14 @@ class EventList extends Component {
                                 changeView={this.props.changeView}
                                 participants={this.props.allParticipants[eventObj.id]}
                                 carpools={this.props.allCarpools[eventObj.id]}
+                                adminMode={this.props.adminMode}
                                 {...eventObj} key={eventObj.id}/>
                         )
                     }
                 </div>
                 <br/>
-                <button type="button" name="button" onClick={this.newEventPressed}>New Event</button><br/>
-
+                {this.props.adminMode ? <button type="button" name="button" onClick={this.newEventPressed}>New Event</button>: null}
+                <br/>
             </>
         );
     }

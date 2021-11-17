@@ -133,7 +133,6 @@ class DriverView extends Component {
         ]
         let driverViews = [];
         let columnlength = Math.ceil(carpoolObjs.length/numColumns);
-        console.log(columnlength);
         while(carpoolObjs.length){
             let column = [];
             for(let i=0;i<columnlength;i++){
@@ -141,7 +140,7 @@ class DriverView extends Component {
                 column.push(carpoolObjs.shift());
             }
             driverViews.push(
-                <div className="driverCol">
+                <div className="driverCol" key={driverViews.length}>
                     {column}
                 </div>
             )

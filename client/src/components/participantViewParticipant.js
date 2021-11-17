@@ -49,9 +49,9 @@ class ParticipantViewParticipant extends React.Component {
 
     render(){
         return(<Fragment key={this.props.id}>
-            <div className={"participantViewParticipant"+(this.props.carpool.drivingCarpool!=null?" driver":"")} onClick={this.participantPressed}>{this.props.personalInformation.name}</div>
-            <div onClick={this.departingCarpoolPressed}>{this.nameOfCarpool(this.props.carpool.departing)}</div>
-            <div onClick={this.returningCarpoolPressed}>{this.nameOfCarpool(this.props.carpool.returning)}</div>
+            <div className={"participantViewParticipant"+(this.props.carpool.drivingCarpool!=null?" driver":"")} >{this.props.personalInformation.name}</div>
+            <div>{this.nameOfCarpool(this.props.carpool.departing)}</div>
+            <div>{this.nameOfCarpool(this.props.carpool.returning)}</div>
         </Fragment>)
     }
 }

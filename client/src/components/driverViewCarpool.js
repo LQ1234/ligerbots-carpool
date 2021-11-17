@@ -38,22 +38,22 @@ class DriverViewCarpool extends Component {
                     emptyDepartingMessage="No Departing Trip"
                 }else{
                     for(let i=0;i<carpool.takenDeparting;i++){
-                        countInfo.push(<div style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
+                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
                     }
                     for(let i=carpool.takenDeparting;i<carpool.seats;i++){
-                        countInfo.push(<div style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
+                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
                     }
                 }
-                countInfo.push(<div className="vertbar" style={{right:(xoffset-=15)+"px"}}></div>)
+                countInfo.push(<div key="vertbar" className="vertbar" style={{right:(xoffset-=15)+"px"}}></div>)
                 if(carpool.trip==0){
                     xoffset-=15*carpool.seats;
                     emptyReturningMessage="No Returning Trip"
                 }else{
                     for(let i=0;i<carpool.takenReturning;i++){
-                        countInfo.push(<div style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
+                        countInfo.push(<div key={"returning"+i} style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
                     }
                     for(let i=carpool.takenReturning;i<carpool.seats;i++){
-                        countInfo.push(<div style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
+                        countInfo.push(<div key={"returning"+i} style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
                     }
                 }
 

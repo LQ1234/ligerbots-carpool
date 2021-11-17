@@ -27,6 +27,8 @@
     },
     "dependencies": {
         "moment": "^2.27.0",
-        "react-datepicker": "^3.0.0"
+        "react-datepicker": "^3.0.0",
+        "react-markdown": "^7.1.0",
+        "remark-gfm": "^3.0.1"
     }
 }

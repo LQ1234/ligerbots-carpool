@@ -31,7 +31,6 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
     }
 
     mouseDownListener=(e)=>{
-        console.log(e.buttons);
 
         if(!(e.buttons&1) || this.state.dragging)return;
         this.removeMouseListeners();
@@ -52,7 +51,6 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
         this.dropMoveHandler(e.clientX,e.clientY);
     }
     mouseUpListener=(e)=>{
-        console.log(e.buttons);
         if(e.buttons&1)return;
 
         if(!this.state.dragging){
@@ -85,7 +83,6 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
     }
 
     touchStartListener=(e)=>{
-        console.log("touchstart");
         this.removeTouchListeners();
         this.startDragPos.x=e.touches[0].pageX;
         this.startDragPos.y=e.touches[0].pageY;
@@ -104,7 +101,6 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
 
     }
     touchMoveListener=(e)=>{
-        console.log("touchmove");
 
         if(performance.now()-this.holdStart>this.holdTime){
             e.preventDefault();
@@ -132,7 +128,6 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
         }
     }
     touchEndListener=(e)=>{
-        console.log("touchend");
 
         clearTimeout(this.holdTimeout)
         if(performance.now()-this.holdStart<this.holdTime){

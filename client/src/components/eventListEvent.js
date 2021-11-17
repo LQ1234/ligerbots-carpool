@@ -2,6 +2,8 @@ import React, {Component} from "react";
 import {shouldOpenInNewTab} from "../util.js";
 import EventPopup from "./eventPopup";
 import DriverView from "./driverView";
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 import moment from 'moment';
 
@@ -17,8 +19,11 @@ class EventListEvent extends Component {
             id:this.props.id
         });
     }
-    addClicked=(e)=>{
-        this.props.changeView("add-form",this.props.id,shouldOpenInNewTab(e));
+    addClickedPassenger=(e)=>{
+        this.props.changeView("add-form-passenger",this.props.id,shouldOpenInNewTab(e));
+    }
+    addClickedCarpool=(e)=>{
+        this.props.changeView("add-form-carpool",this.props.id,shouldOpenInNewTab(e));
     }
     driverViewClicked=(e)=>{
         this.props.changeView("driver-view",this.props.id,shouldOpenInNewTab(e));
@@ -30,7 +35,6 @@ class EventListEvent extends Component {
 
 
     render(){
-        console.log("???",this.props)
         let eventMoment=moment(this.props.date);
         return(
             <div>
@@ -46,9 +50,9 @@ class EventListEvent extends Component {
                             sameElse: "MMMM Do, YYYY"
                         })}
                     </span>
-                    <button type="button" name="button" onClick={this.editClicked}>
+                    {this.props.adminMode?<button type="button" name="button" onClick={this.editClicked}>
                         <img src="https://d18vdu4p71yql0.cloudfront.net/libraries/noun-project/Gear-1ea286ce69.svg"/>
-                    </button>
+                    </button>:null}
                     <br/>
 
                 </div>
@@ -60,11 +64,13 @@ class EventListEvent extends Component {
                            <span className="cat">Departure Time:</span> {this.props.defaultReturningTime.trim() ? this.props.defaultReturningTime : <i>unspecified</i>}
                          </div>
                          <div className="buttons">
-                             <button type="button" name="button" onClick={this.addClicked}>Add Passenger</button>
-                             <button type="button" name="button" onClick={this.addClicked}>Add Carpool</button>
-                             <button type="button" name="button" onClick={this.participantViewClicked}>Participant View</button>
+                             <button type="button" name="button" onClick={this.addClickedPassenger}>Add Passenger</button>
+                             <button type="button" name="button" onClick={this.addClickedCarpool}>Add Carpool</button>
+                             <button type="button" name="button" onClick={this.participantViewClicked}>View as Grid</button>
                          </div>
-                        {this.props.note.trim() ? <div className="note"><div className="noteprefix">Note:</div>{this.props.note}</div>: null}
+                        {this.props.note.trim() ?
+                            <div className="note"><div className="noteprefix">Note:</div><ReactMarkdown children={this.props.note} remarkPlugins={[remarkGfm]} /></div>:
+                            null}
                         <DriverView
                             popupMessageFunctions={this.props.popupMessageFunctions}
                             showPopup={this.props.showPopup}
