@@ -3,13 +3,20 @@ let settings = {
     maxStrLen: 1000
 }
 
-let mysql = require("mysql");
+let mysql = require("mysql2");
 
+
+var fs = require('fs');
+if(process.argv.length != 3 +process.execArgv){
+    console.log("usage: "+process.argv.slice(0, 2 +process.execArgv).join(" ")+" [path to config]");
+    process.exit()
+}
+var options = JSON.parse(fs.readFileSync(process.argv[ 2 +process.execArgv], 'utf8'));
 
 let con = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "ligerbots-carpool",
-    password: "PASSWORD",
+    host:options["host"],
+    user: options["user"],
+    password: options["password"],
     charset : 'utf8mb4',
     database: settings.dbName
 });
@@ -180,10 +187,9 @@ function databaseError(res,err){
     console.log("database error",err);
 }
 
-let fs = require('fs')
 let crypto = require('crypto');
 
-let psk = fs.readFileSync('../../psk.txt', 'utf8')
+let psk = fs.readFileSync(options["pskdir"], 'utf8')
 console.log(psk)
 function verifyUserType(logindata,required_usertype){
     let [usertype, salt, hash] = logindata.split(",");

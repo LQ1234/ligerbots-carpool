@@ -2,7 +2,7 @@ let settings = {
     dbName: "ligerbotscarpool",
     maxStrLen: 1000
 }
-let mysql = require("mysql");
+let mysql = require("mysql2");
 
 function init(con) {
     {
@@ -81,10 +81,17 @@ function init(con) {
         });
     }
 }
+var fs = require('fs');
+if(process.argv.length != 3 +process.execArgv){
+    console.log("usage: "+process.argv.slice(0, 2 +process.execArgv).join(" ")+" [path to config]");
+    process.exit()
+}
+var options = JSON.parse(fs.readFileSync(process.argv[ 2 +process.execArgv], 'utf8'));
+
 let con = mysql.createConnection({
-    host: "127.0.0.1",
-    user: "ligerbots-carpool",
-    password: "PASSWORD",
+    host:options["host"],
+    user: options["user"],
+    password: options["password"],
     charset : 'utf8mb4',
 });
 con.connect((err) => {
