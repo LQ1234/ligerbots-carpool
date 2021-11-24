@@ -121,35 +121,56 @@ class DriverView extends Component {
             dropTargetDeparting:this.state.dropTargetDeparting,
             dropTargetCarpool:this.state.dropTargetCarpool
         }
-        let numColumns = Math.min(this.state.maxNumColumns,Object.keys(this.props.carpools).length+2);
-        let carpoolObjs = [
-            ...Object.keys(this.props.carpools).map((a)=>{
+        if(this.state.maxNumColumns == 1){
+            let carpoolObjs = [
+                ...Object.keys(this.props.carpools).map((a)=>{
+                    return(
+                        <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={a} for={{type: 3,carpoolId: this.props.carpools[a].id}} containingDeparting={idByDepartingCarpool[a]||[]} containingReturning={idByReturningCarpool[a]||[]} participants={this.props.participants} carpools={this.props.carpools} />
+                    );
+                }),
+                <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-1} for={{type: 0,carpoolId: -1}} containingDeparting={idsInDepartingWaitlist} containingReturning={idsInReturningWaitlist} participants={this.props.participants} carpools={this.props.carpools} />,
+                <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-2} for={{type: 1,carpoolId: -1}} containingDeparting={idsWithDepartingParent} containingReturning={idsWithReturningParent} participants={this.props.participants} carpools={this.props.carpools} />
+            ]
+            return <div className="driverViews" style={{gridTemplateColumns: "100%"}}>
+                <div className="driverCol">
+                    {carpoolObjs}
+                </div>
+            </div>
+        }else{
+
+            let numColumns = Math.max(1,Math.min(this.state.maxNumColumns-1, Object.keys(this.props.carpools).length));
+            let driverViewContents = [];
+            for(let i=0;i<numColumns;i++){
+                driverViewContents.push([])
+            }
+            let carpoolObjs = Object.keys(this.props.carpools).map((a)=>{
                 return(
                     <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={a} for={{type: 3,carpoolId: this.props.carpools[a].id}} containingDeparting={idByDepartingCarpool[a]||[]} containingReturning={idByReturningCarpool[a]||[]} participants={this.props.participants} carpools={this.props.carpools} />
                 );
-            }),
-            <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-1} for={{type: 0,carpoolId: -1}} containingDeparting={idsInDepartingWaitlist} containingReturning={idsInReturningWaitlist} participants={this.props.participants} carpools={this.props.carpools} />,
-            <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-2} for={{type: 1,carpoolId: -1}} containingDeparting={idsWithDepartingParent} containingReturning={idsWithReturningParent} participants={this.props.participants} carpools={this.props.carpools} />
-        ]
-        let driverViews = [];
-        let columnlength = Math.ceil(carpoolObjs.length/numColumns);
-        while(carpoolObjs.length){
-            let column = [];
-            for(let i=0;i<columnlength;i++){
-                if(!carpoolObjs.length)break;
-                column.push(carpoolObjs.shift());
+            });
+            let col=0;
+            while(carpoolObjs.length){
+                driverViewContents[col].push(carpoolObjs.shift());
+                col = (col+1)%numColumns
             }
-            driverViews.push(
-                <div className="driverCol" key={driverViews.length}>
-                    {column}
+
+            return(
+
+                <div className="driverViews" style={{gridTemplateColumns: ((99.5/(numColumns+1))+"% ").repeat(numColumns+1)}}>
+                    {Object.keys(this.props.carpools).length==0? <div style={{color:"grey", fontSize:"0.8em", textAlign:"center", marginTop: "auto",  marginBottom: "auto"}}><i>No Carpools</i></div> : driverViewContents.map((a,i)=>{
+                        return <div className="driverCol" key={i}>
+                            {a}
+                        </div>
+                    })}
+                    <div className="driverCol specialCol">
+
+                        <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-1} for={{type: 0,carpoolId: -1}} containingDeparting={idsInDepartingWaitlist} containingReturning={idsInReturningWaitlist} participants={this.props.participants} carpools={this.props.carpools} />
+                        <DriverViewCarpool dropHandlers={this.dropHandlers} {...dropInformation} row={row+=2} showPopup={this.props.showPopup} showDropOutline={this.showDropOutline} key={-2} for={{type: 1,carpoolId: -1}} containingDeparting={idsWithDepartingParent} containingReturning={idsWithReturningParent} participants={this.props.participants} carpools={this.props.carpools} />
+
+                    </div>
                 </div>
-            )
+            );
         }
-        return(
-            <div className="driverViews" style={{gridTemplateColumns: ((99.5/driverViews.length)+"% ").repeat(driverViews.length)}}>
-                {driverViews}
-            </div>
-        );
     }
 }
 export default DriverView;

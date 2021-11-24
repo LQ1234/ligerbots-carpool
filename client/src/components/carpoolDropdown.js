@@ -2,9 +2,9 @@ import React, {Component} from "react";
 
 function dropdownBounding(dropdown){
     let rect=dropdown.parentElement.querySelector(".selectorButton").getBoundingClientRect();
+    let containingrect= document.querySelector(".popup-container").getBoundingClientRect();
     let dwidth=500;
     let windowwidth=document.documentElement.clientWidth;
-
     let margin=20;
     if(rect.x+dwidth+margin<windowwidth){
         dropdown.style.width=`${dwidth}px`;
@@ -12,12 +12,12 @@ function dropdownBounding(dropdown){
         dropdown.style.left=`auto`;
     }else if(dwidth+2*margin<windowwidth){
         dropdown.style.width=`${dwidth}px`;
-        dropdown.style.right=`${margin}px`;
-        dropdown.style.left=`auto`;
+        dropdown.style.right=`auto`;
+        dropdown.style.left=`${windowwidth-containingrect.x-dwidth-margin}px`;
     }else{
         dropdown.style.width=`auto`;
-        dropdown.style.right=`${margin}px`;
-        dropdown.style.left=`${margin}px`;
+        dropdown.style.right=`${-(windowwidth-(containingrect.x+containingrect.width)-margin)}px`;
+        dropdown.style.left=`${-containingrect.x+margin}px`;
     }
 }
 class CarpoolDropdown extends Component {

@@ -21,6 +21,7 @@ class DriverViewCarpool extends Component {
         let countInfo=[];
         let emptyDepartingMessage="Empty"
         let emptyReturningMessage="Empty"
+        let hasnote = false;
         switch(props.for.type){
             case 0:
             name="Waitlist";
@@ -30,7 +31,7 @@ class DriverViewCarpool extends Component {
             break;
             default:{
                 let carpool=props.carpools[props.for.carpoolId]
-                var xoffset=15*(1+2*carpool.seats);
+                var xoffset=15*(1+Math.max(carpool.seats, carpool.takenDeparting)+Math.max(carpool.seats, carpool.takenReturning));
 
                 if(carpool.trip==1){
                     xoffset-=15*carpool.seats;
@@ -38,7 +39,7 @@ class DriverViewCarpool extends Component {
                     emptyDepartingMessage="No Departing Trip"
                 }else{
                     for(let i=0;i<carpool.takenDeparting;i++){
-                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
+                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className={i>=carpool.seats?"reddot":"filleddot"}></div>)
                     }
                     for(let i=carpool.takenDeparting;i<carpool.seats;i++){
                         countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
@@ -58,6 +59,7 @@ class DriverViewCarpool extends Component {
                 }
 
                 name=carpool.name;
+                if(carpool.note.trim())hasnote=true;
             }
         }
         let driverId=props.for.type==3?props.carpools[props.for.carpoolId].driverId:-1;
@@ -74,7 +76,7 @@ class DriverViewCarpool extends Component {
                     ):null
                 }
                 <div style={{"gridRow":this.props.row}} className={"carpoolHeader whiteforeground "+((this.props.for.type==3)?" underlineable showeditsymbol":"")} onClick={this.carpoolPressed}>
-                    {name}
+                    {name} {hasnote ? <img src="note.png"/> : null}
                     <span className="countInfo">
                         {countInfo}
                     </span>

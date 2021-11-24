@@ -108,17 +108,20 @@ class AddForm extends Component {
         if(!this.state.personalInformation.name.trim().length){
             this.props.popupMessageFunctions.showPopupMessage({message:"Name should not be empty.",type:PopupMessage.error});
             return
-        }
+        }/*
         if(this.props.participantType=="carpool" && !this.state.newCarpool.name.trim().length){
             this.props.popupMessageFunctions.showPopupMessage({message:"Carpool Name should not be empty.",type:PopupMessage.error});
             return
-        }
-        let req=flatten({
+        }*/
+        let formatted_tree = {
             eventId:this.props.eventId,
             personalInformation:this.state.personalInformation,
             carpool:this.state.carpool,
             ...this.state.newCarpool
-        });
+        }
+
+        formatted_tree.name = formatted_tree.personalInformation.name;
+        let req=flatten(formatted_tree);
         req.carpool_isDriver = this.props.participantType=="carpool";
         fetch(api_root+'add-carpool-or-participant', {
             method: 'POST',
@@ -171,7 +174,7 @@ class AddForm extends Component {
                                     </>
                                     :null
                                 }
-                                <label><span>Note: </span><br/><textarea name="note" value={this.state.personalInformation.note} onChange={this.handlePersonalInformationChange}/></label>
+                                {this.props.participantType=="carpool"? null: <label><span>Note: </span><br/><textarea name="note" value={this.state.personalInformation.note} onChange={this.handlePersonalInformationChange}/></label>}
 
 
                                 {/*<div>
@@ -186,7 +189,7 @@ class AddForm extends Component {
                             this.props.participantType=="carpool"?<>
                                 <div className="section">
                                     <div className="infoGrid">
-                                        <label><span>Carpool Name: </span><input name="name" value={this.state.newCarpool.name} onChange={this.handleNewCarpoolChange}/></label>
+                                        {/*<label><span>Carpool Name: </span><input name="name" value={this.state.newCarpool.name} onChange={this.handleNewCarpoolChange}/></label>*/}
                                         <label><span>Origin: </span><input name="origin" value={this.state.newCarpool.origin} onChange={this.handleNewCarpoolChange}/></label>
                                         <label><span>Departing Time: </span><input name="departingTime" value={this.state.newCarpool.departingTime} onChange={this.handleNewCarpoolChange}/></label>
                                         <label><span>Return Time: </span><input name="returningTime" value={this.state.newCarpool.returningTime} onChange={this.handleNewCarpoolChange}/></label>
