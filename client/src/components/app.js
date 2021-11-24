@@ -24,7 +24,7 @@ class App extends Component {
             events:{},
             shownPopupMessage:null,
             showClickDetect: false,
-            adminMode: false
+            adminMode: window.logindata.split(",")[0] == "admin"
         }
         this.searchParams=new URLSearchParams(window.location.search);
         this.clickDetectCallback = null;

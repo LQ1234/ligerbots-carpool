@@ -57,6 +57,7 @@ class EventPopup extends Component {
             return
         }
         let req=flatten({id:this.props.id,...eventWithStringDate(this.state.modified)})
+        req.logindata = window.logindata;
         console.log(req);
         fetch(api_root+'edit-event', {
             method: 'POST',
@@ -79,6 +80,7 @@ class EventPopup extends Component {
             return
         }
         let req=flatten({...eventWithStringDate(this.state.modified)})
+        req.logindata = window.logindata;
         console.log(req);
         fetch(api_root+'add-event', {
             method: 'POST',
@@ -97,6 +99,8 @@ class EventPopup extends Component {
     }
     deleteClicked=()=>{
         let req=flatten({id:this.props.id})
+        req.logindata = window.logindata;
+
         if(window.confirm("Are you sure you want to delete this event?"))
         fetch(api_root+'delete-event', {
             method: 'POST',
