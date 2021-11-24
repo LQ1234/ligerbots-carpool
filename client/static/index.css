@@ -1,4 +1,609 @@
+body {
+  font-family: Arial, sans-serif;
 
+}
+#root{
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding:1em;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+#events>div {
+  margin-top: 1em;
+  min-height: 2em;
+  border: 0px solid black;
+  position: relative;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: 2.4em auto;
+  box-shadow: 0px 0px 10px 0px lightgrey;
+}
+
+#events>div>.title {
+  font-size: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgb(0, 102, 179);
+  grid-column: 1;
+  grid-row: 1;
+  line-height: 2.2em;
+  padding: 0.1em;
+  color: white;
+  text-align: left;
+  border-radius: 3px 3px 0px 0px;
+  font-family: Verdana, sans-serif;
+  padding-left: 1em;
+  position: relative;
+}
+
+#events>div>.title>button {
+  font-size: 1em;
+  padding: 0px;
+  background-color: rgba(0, 0, 0, 0);
+  border-width: 0px;
+  display: inline;
+  vertical-align: sub;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#events>div>.title>button:hover {
+  padding: 0px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-width: 0px;
+
+}
+
+#events>div>.title>button>img {
+  height: 1.5em;
+  filter: invert(100%);
+  width: 1.5em;
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+}
+
+#events>div>.title>.date {
+  margin-left: 0.5em;
+  font-style: italic;
+  font-size: 0.7em;
+}
+
+#events>div>.dbbox {
+  grid-column: 1;
+  grid-row: 2;
+  border: 2px solid lightgrey;
+  border-top: 0px;
+  padding: 1em;
+  padding-top: 0.5em;
+  font-size: 0.8em;
+
+}
+
+#events>div>.dbbox>.description {}
+
+#events>div>.dbbox>.description>.note {
+  background-color: rgba(0, 102, 179, 0.1);
+  padding: 0.3em;
+  padding-left: 0.5em;
+  border-left: 3px solid rgb(0, 102, 179);
+  margin-bottom: .5em;
+  margin-top: 0.5em;
+}
+
+#events>div>.dbbox>.description>.note>.noteprefix {
+  font-size: 0.8em;
+  font-style: italic;
+  margin-bottom: 0.3em;
+}
+
+#events>div>.dbbox>.description>.scheduleinfo>.cat {
+  font-style: italic;
+}
+
+#events>div>.dbbox>.description>.scheduleinfo {
+  text-align: center;
+}
+
+#events>div>.dbbox>.description>.driverViews {
+  display: grid;
+  grid-gap: 0.3em;
+  width: 100%;
+
+}
+
+#events>div>.dbbox>.description>.driverViews>* {
+}
+
+.driverViewGrid {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: 50% 50%;
+  margin-bottom: 5px;
+}
+
+.driverViewGrid>.carpoolHeader {
+  border-radius: 3px 3px 0px 0px;
+  background-color: rgb(0, 102, 179);
+  color: white;
+  padding: .5em;
+  grid-column: 1 / 3;
+}
+.driverViewGrid.specialcarpooltype>.carpoolHeader {
+  background-color: rgb(0, 62, 139);
+}
+.driverViewGrid>.carpoolHeader>.countInfo {
+  float: right;
+  position: relative;
+  height: 100%;
+}
+
+.driverViewGrid>.carpoolTripContainer {
+  background-color: rgb(229.5, 239.7, 247.4);
+  padding-bottom: 0.5em;
+}
+
+.driverViewGrid.specialcarpooltype>.carpoolTripContainer {
+    background-color: rgb(229.5, 235.7, 254.24);
+
+}
+
+.driverViewGrid>.carpoolTripContainer {
+  border-right: 1px solid rgb(0, 102, 179);
+  position: relative;
+}
+.driverViewGrid.specialcarpooltype>.carpoolTripContainer {
+    border-right: 1px solid rgb(0, 62, 139);
+}
+
+.driverViewGrid>.carpoolTripContainer:last-child {
+  border-right: 0px solid grey;
+  border-left: 1px solid rgb(0, 102, 179);
+}
+.driverViewGrid.specialcarpooltype>.carpoolTripContainer:last-child {
+    border-left: 1px solid rgb(0, 62, 139);
+
+}
+
+.driverViewGrid>.carpoolTripContainer > .carpoolParticipant{
+  padding: 0.4em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  position: relative;
+  text-overflow: ellipsis;
+  background-color: rgb(229.5, 239.7, 247.4);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  height: 1.4em;
+  display: block;
+  overflow: hidden;
+  box-sizing: border-box;
+
+}
+.driverViewGrid.specialcarpooltype>.carpoolTripContainer > .carpoolParticipant{
+    background-color: rgb(229.5, 235.7, 254.24);
+
+}
+.driverViewGrid>.carpoolTripContainer > .carpoolParticipant>.carpoolParticipantText{
+    overflow: hidden;
+    position: absolute;
+    text-overflow: ellipsis;
+    height: 100%;
+    width: calc(100% - 1em);
+    white-space: nowrap;
+
+}
+
+.driverViewGrid>.carpoolTripContainer > .key{
+    font-size: 0.8em;
+    text-align: center;
+    margin-top: .3em;
+}
+.carpoolParticipant.dragging{
+    z-index: 3;
+}
+.dropTarget{
+    z-index: 2;
+    outline-style: solid;
+    outline-offset: -.2em;
+    outline-width:thin;
+}
+.dropTarget.hover{
+    background-color: rgba(100,100,100,.3);
+}
+.showeditsymbol:hover::after{
+    content:"";
+    width:1em;
+    height: 1em;
+    display: inline-block;
+
+    background-image: url("data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9JzMwMHB4JyB3aWR0aD0nMzAwcHgnICBmaWxsPSIjMDAwMDAwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMiIgdmlld0JveD0iMCAwIDMyIDMyIiB4PSIwcHgiIHk9IjBweCI+PHRpdGxlPnBlbjwvdGl0bGU+PHBvbHlnb24gcG9pbnRzPSIxMi4zNiAyNS4xNyA3LjEzIDI3LjU4IDcuNjcgMjEuNzkgMTIuMzYgMjUuMTciPjwvcG9seWdvbj48cG9seWdvbiBwb2ludHM9IjEyLjM2IDI1LjE3IDcuMTMgMjcuNTggNy42NyAyMS43OSAxMi4zNiAyNS4xNyI+PC9wb2x5Z29uPjxwb2x5Z29uIHBvaW50cz0iMjQuODcgNy43OSAxMi45NSAyNC4zNiA4LjI1IDIwLjk4IDIwLjE4IDQuNDIgMjQuODcgNy43OSI+PC9wb2x5Z29uPjwvc3ZnPg==");
+    background-size: 1.2em;
+    position: absolute;
+}
+.showeditsymbol.whiteforeground:hover::after{
+
+    filter: invert(100%);
+}
+.emptydot{
+    background-image: url("emptydot.png");
+
+}
+.filleddot{
+    background-image: url("filleddot.png");
+
+}
+.vertbar{
+    background-image: url("vertbar.png");
+    margin-left: 4px;
+    margin-right: 4px;
+    width: 6px;
+    height: 20px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    vertical-align: center;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top:50%;
+
+}
+.emptydot,.filleddot {
+    display: inline-block;
+    margin-left: 2px;
+    margin-right: 2px;
+    width: 10px;
+    height: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top:50%;
+
+}
+.buttons{
+    margin-top: 0.3em;
+    display: flex;
+    justify-content: center;
+
+flex-wrap: wrap;
+}
+button{
+    background-color: rgb(0, 102, 179);
+    color:white;
+    border-radius: 0.2em;
+    border: 0px solid black;
+    padding: 0.6em;
+    padding-left: 0.8em;
+    padding-right: 0.8em;
+    font-size: 0.8em;
+}
+.buttons > button{
+    margin-right: 1em;
+    margin-bottom: 0.5em;
+    font-size: 1em;
+
+}
+button:hover{
+    background-color: rgb(30, 132, 209);
+}
+button:active{
+    background-color: rgb(0, 72, 149);
+}
+
+.overlayMessage{
+    --line-color: rgb(0, 102, 179);
+
+    width:calc(15em + 10vw);
+    max-width: calc(100vw - 3em);
+    display: flex;
+    position: fixed;
+    top:1em;
+
+    background-color: white;
+    min-height: 1em;
+
+    left:50%;
+    position: fixed;
+    transform: translate(-50%, 0%);
+    z-index: 200;
+
+    border: 2px solid var(--line-color);
+    color: var(--line-color);
+    padding: .5em;
+    box-sizing: border-box;
+    box-shadow: 0px 0px 10px 0px grey;
+}
+.overlayMessage.error{
+    /*--line-color: red;*/
+}
+
+.overlayMessage .closeButton{
+    height: 2em;
+    width: 2em;
+    padding-left: .6em;
+    padding-right: .6em;
+    margin-left: .5em;
+}
+.overlayMessage > div{
+    flex-grow: 1;
+}
+.popup-wrapper{
+    overflow-y: auto;
+    z-index: 50;
+
+    position: fixed;
+    left:0px;
+    right:0px;
+    top:0px;
+    bottom:0px;
+}
+.popup-container > .title{
+    color:white;
+    background-color: rgb(0, 102, 179);
+    border-radius: 3px 3px 0px 0px;
+    padding: 0.5em;
+    text-align: center;
+}
+.popup-container {
+    position: absolute;
+    max-width:90%;
+    left: 50%;
+    top:50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 50;
+    box-shadow: 0px 0px 15px lightgrey;
+    min-width: 20em;
+}
+.popup{
+    border: 1px solid rgb(0, 102, 179);
+    border-top-width: 0px;
+    padding:1em;
+    font-size: 0.8em;
+}
+.popup > button {
+    font-size: 1em;
+    min-width: 7em;
+}
+.popup input{
+    margin-bottom: .6em;
+}
+.popup textarea{
+    margin-bottom: .6em;
+    height:7em;
+}
+.infoGrid {
+    display: grid;
+    grid-template-columns: auto;
+    max-width: 100%;
+
+}
+.infoGrid > *{
+    display: grid;
+    grid-template-columns: 50% 50%;
+
+}
+.infoGrid > * > .imbeddedCarpool{
+    grid-column: 2;
+}
+.infoGrid > * > .imbeddedParticipant{
+    grid-column: 2;
+}
+.infoGrid > * > span{
+    display: inline-block;
+    box-sizing: border-box;
+    grid-column: 1;
+    max-width: 20em;
+}
+.infoGrid > * > input{
+    max-width: 15em;
+    grid-column: 2;
+    box-sizing: border-box;
+
+}
+.infoGrid > * > textarea{
+    width:100%;
+    min-height: 4em;
+    grid-column:  1 / 3;
+    box-sizing: border-box;
+    resize: vertical;
+
+}
+.infoGrid >.carpoolChoice{
+    grid-template-columns: 33% 33% 33%;
+    margin-top: 0.5em;
+
+}
+.infoGrid >.carpoolChoice > *{
+    vertical-align:middle;
+
+}
+.infoGrid > * > .carpoolSelector > .selectorButton{
+    width: 100%;
+}
+.carpoolSelector{
+    display: inline-block;
+}
+.carpoolSelector>.selectorButton{
+    display: inline-block;
+    margin-top: .3em;
+    padding: 0em .5em;
+    user-select: none;
+    padding:.5em 1em;
+    font-size: .95em;
+}
+.carpoolSelector>.selectorButton::after{
+    content: "";
+    border-top: 2px solid white;
+    border-right: 2px solid white;
+    width:.6em;
+    height:.6em;
+    display: inline-block;
+    transform: rotate(135deg) scale(.8);
+    margin-left: .3em;
+}
+.carpoolSelector>.selectorDropdown{
+    border-radius: 2px;
+    position: absolute;
+    border: 1px solid black;
+    background-color: white;
+    width:500px;
+    z-index: 112;
+}
+.carpoolSelector>.selectorDropdown {
+    line-height: 1em;
+}
+.carpoolSelector>.selectorDropdown>div{
+    padding: .3em .5em;
+
+}
+.carpoolSelector>.selectorDropdown .carpoolCount{
+    font-weight: lighter;
+    color:gray;
+    margin-left:.8em;
+}
+
+.carpoolSelector>.selectorDropdown>.selectorRow{
+    display: flex;
+    border-bottom: 1px solid gray;
+    overflow: auto;
+    padding:.3em .7em;
+    text-decoration: none;
+    color:black;
+    position: relative;
+    z-index: 112;
+
+}
+.carpoolSelector>.selectorDropdown>.selectorRow:last-child{
+    border-bottom: 0px solid gray;
+
+}
+.carpoolSelector>.selectorDropdown>.selectorRow.disabled{
+    color:gray;
+}
+.carpoolSelector>.selectorDropdown>.selectorRow:not(.label)::before{
+    content: "";
+    width:100%;
+    background-color: rgba(0,0,0,0);
+    position: absolute;
+    height:100%;
+    top:0px;
+    left:0px;
+    z-index: 111;
+}
+
+.carpoolSelector>.selectorDropdown>.selectorRow.selected::before{
+    background-color: rgb(30, 132, 209);
+}
+.carpoolSelector>.selectorDropdown>.selectorRow.selected > *{
+    color:white;
+}
+.carpoolSelector>.selectorDropdown>.selectorRow.selected > .carpoolName > .carpoolCount{
+    color:lightgrey;
+}
+.carpoolSelector>.selectorDropdown>.selectorRow:not(.label):hover::before{
+    background-color: rgba(200,200,200,.2);
+}
+.carpoolSelector>.selectorDropdown>.selectorRow.selected:not(.label):hover::before{
+    background-color: rgba(30, 132, 209,.7);
+}
+.carpoolSelector>.selectorDropdown>.selectorRow:not(.label):active::before{
+    background-color: rgba(200,200,200,.7);
+}
+.carpoolSelector>.selectorDropdown>.selectorRow.disabled.disabled.disabled::before{
+    background-color: rgba(200,200,200,0);
+}
+.carpoolSelector>.selectorDropdown>.selectorRow>*{
+    display: inline-block;
+    z-index: 113;
+
+}
+.carpoolSelector>.selectorDropdown>.selectorRow .carpoolName{
+    flex-grow: 1;
+}
+
+.carpoolSelector>.selectorDropdown>.selectorRow .carpoolOrigin{
+    width:5em;
+    flex-shrink: 0;
+}
+.carpoolSelector>.selectorDropdown>.selectorRow .carpoolTime{
+    width:7em;
+    flex-shrink: 0;
+
+}
+
+.carpoolSelector>.selectorDropdown>.moreInfo button{
+    width:1.7em;
+    height:1.7em;
+    display: block;
+    padding:0px;
+    left:50%;
+    top:50%;
+    position: absolute;
+    transform: translate(-50%, -50%);
+
+}
+
+.carpoolSelector>.selectorDropdown>.border{
+    grid-column: 1 /-1;
+    background-color: lightgray;
+    padding:0px;
+
+    height:1px;
+}
+.carpoolSelector>.selectorDropdown>.label{
+    background-color: rgb(0, 102, 179);
+    color:white;
+}
+.clickDetect{
+    position: absolute;
+    top:0px;
+    left:0px;
+    right:0px;
+    bottom:0px;
+    z-index: 100;
+}
+.imbeddedCarpool, .imbeddedEvent, .imbeddedParticipant{
+    text-decoration: underline;
+}
+
+.participantViewGrid{
+    display: grid;
+    grid-template-columns: 40% 30% 30%;
+    margin: 1em;
+}
+.participantViewGrid .key{
+    text-align: center;
+}
+.participantViewGrid > *{
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: .3em .5em;
+}
+.participantViewGrid > *:nth-child(3n+3){
+    border-right: 0px solid black;
+}
+.participantViewGrid > *:nth-last-child(1),.participantViewGrid > *:nth-last-child(2),.participantViewGrid > *:nth-last-child(3){
+    border-bottom: 0px solid black;
+}
+
+.participantViewParticipant.driver::after {
+    content: "(Driver)";
+    font-size: 0.5em;
+    margin-left: .2em;
+    margin-right: .3em;
+    background-position: center;
+}
+/*
 body {
     -webkit-text-size-adjust: 100%;
 }
@@ -7,6 +612,7 @@ button{
     border: 1px solid black;
     border-radius: 2px;
     padding:.4em 1em;
+    font-size: 0.9em;
 }
 
 button:hover{
@@ -18,7 +624,13 @@ button:active{
 }
 body{
     font-family: Arial, Helvetica, sans-serif;
+}
+#root{
+    overflow-x: hidden;
+    overflow-y: hidden;
     padding:1em;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 #root> .title{
     font-size: 2em;
@@ -225,7 +837,6 @@ body{
 
 }
 
-/*Unused*/
 .carpoolSelector>.selectorDropdown>.moreInfo button{
     width:1.7em;
     height:1.7em;
@@ -290,6 +901,7 @@ body{
     line-height: 1.6em;
     align-content: start;
     min-height: 3em;
+    overflow: visible;
 }
 .driverViewGrid .carpoolHeader + .carpoolTripContainer{
     border-right: 1px solid black;
@@ -413,6 +1025,9 @@ body{
     display: inline-block;
     vertical-align: top;
     margin-bottom: .3em;
+    font-size: 0.9em;
+    line-height: 1;
+    padding: 2px 10px;
 }
 .dropTarget{
     z-index: 2;
@@ -505,4 +1120,4 @@ body{
 }
 .imbeddedParticipant:hover{
     text-decoration: underline;
-}
+}*/

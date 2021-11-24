@@ -1,7 +1,8 @@
 import React, {Component} from "react";
-import {deepClone,flatten,getTextOrReject,eventWithStringDate} from "../util.js";
+import {deepClone,flatten,getTextOrReject,eventWithStringDate,api_root} from "../util.js";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import PopupMessage from "./popupMessage";
 
 class EventPopup extends Component {
     constructor(props){
@@ -10,7 +11,7 @@ class EventPopup extends Component {
         if(props.newMode){
             this.state={
                 modified:{
-                    title:"New Event",
+                    title:"",
                     note:"",
                     defaultDepartingTime: "",
                     defaultReturningTime: "",
@@ -51,9 +52,13 @@ class EventPopup extends Component {
         this.props.hidePopup();
     }
     saveClicked=()=>{
+        if(!this.state.modified.title.trim().length){
+            this.props.popupMessageFunctions.showPopupMessage({message:"Title should not be empty.",type:PopupMessage.error});
+            return
+        }
         let req=flatten({id:this.props.id,...eventWithStringDate(this.state.modified)})
         console.log(req);
-        fetch('api/edit-event', {
+        fetch(api_root+'edit-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -69,9 +74,13 @@ class EventPopup extends Component {
 
     }
     addClicked=()=>{
+        if(!this.state.modified.title.trim().length){
+            this.props.popupMessageFunctions.showPopupMessage({message:"Title should not be empty.",type:PopupMessage.error});
+            return
+        }
         let req=flatten({...eventWithStringDate(this.state.modified)})
         console.log(req);
-        fetch('api/add-event', {
+        fetch(api_root+'add-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -88,8 +97,8 @@ class EventPopup extends Component {
     }
     deleteClicked=()=>{
         let req=flatten({id:this.props.id})
-
-        fetch('api/delete-event', {
+        if(window.confirm("Are you sure you want to delete this event?"))
+        fetch(api_root+'delete-event', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -108,20 +117,25 @@ class EventPopup extends Component {
         return(
             <>
                 <div className="popup-wrapper" onClick={this.handleHide}>
-                    <div className="popup" >
-                        <div className="infoGrid">
-                            <input name="title" value={this.state.modified.title} className="title" onChange={this.handleChange}/>
-                            <label><span>Default Departing Time</span> <input name="defaultDepartingTime" value={this.state.modified.defaultDepartingTime} onChange={this.handleChange}/></label>
-                            <label><span>Default Returning Time</span> <input name="defaultReturningTime" value={this.state.modified.defaultReturningTime} onChange={this.handleChange}/></label>
-                            <label><span>Date</span> <DatePicker selected={this.state.modified.date} onChange={this.handleDateChange}/></label>
-                            <textarea className="note" name="note" value={this.state.modified.note} onChange={this.handleChange}/>
+                    <div className="popup-container">
+                        <div className="title" >
+                        {this.props.newMode?"New":"Editing"} Event
                         </div>
-                        {this.props.newMode?<button type="button" name="button" onClick={this.addClicked}>Add</button>:<button type="button" name="button" onClick={this.saveClicked}>Save</button>}
-                        &emsp;
-                        <button type="button" name="button" onClick={this.cancelClicked}>Cancel</button>
-                        &emsp;
-                        {this.props.newMode?null:<button type="button" name="button" onClick={this.deleteClicked}>Delete</button>}
-                    </div>
+                        <div className="popup" >
+                            <div className="infoGrid">
+                                <input name="title" value={this.state.modified.title} className="title" onChange={this.handleChange}/>
+                                <label><span>Default Departing Time</span> <input name="defaultDepartingTime" value={this.state.modified.defaultDepartingTime} onChange={this.handleChange}/></label>
+                                <label><span>Default Returning Time</span> <input name="defaultReturningTime" value={this.state.modified.defaultReturningTime} onChange={this.handleChange}/></label>
+                                <label><span>Date</span> <DatePicker selected={this.state.modified.date} onChange={this.handleDateChange}/></label>
+                                <textarea className="note" name="note" value={this.state.modified.note} onChange={this.handleChange}/>
+                            </div>
+                            {this.props.newMode?<button type="button" name="button" onClick={this.addClicked}>Add</button>:<button type="button" name="button" onClick={this.saveClicked}>Save</button>}
+                            &emsp;
+                            <button type="button" name="button" onClick={this.cancelClicked}>Cancel</button>
+                            &emsp;
+                            {this.props.newMode?null:<button type="button" name="button" onClick={this.deleteClicked}>Delete</button>}
+                            </div>
+                        </div>
                 </div>
             </>
         )

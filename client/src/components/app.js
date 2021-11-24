@@ -8,8 +8,7 @@ import DriverView from "./driverView";
 import AddForm from "./addForm";
 import EventList from "./eventList";
 
-import {shouldOpenInNewTab,unflatten,flatten,objectFilter,eventWithRealDate} from "../util.js";
-
+import {shouldOpenInNewTab,unflatten,flatten,objectFilter,eventWithRealDate, api_root} from "../util.js";
 
 class App extends Component {
     constructor(props){
@@ -24,9 +23,12 @@ class App extends Component {
             carpools:{},
             events:{},
             shownPopupMessage:null,
+            showClickDetect: false,
+            adminMode: false
         }
         this.searchParams=new URLSearchParams(window.location.search);
-        if(["add-form","driver-view","participant-view"].includes(this.searchParams.get("view"))){
+        this.clickDetectCallback = null;
+        if(["add-form-passenger","add-form-carpool","participant-view"].includes(this.searchParams.get("view"))){
             let eventId=parseInt(this.searchParams.get("eventId"));
             if(isNaN(eventId)){
                 this.state.view="event-list";
@@ -39,13 +41,13 @@ class App extends Component {
         }
 
         Promise.all([
-            fetch('api/events', {
+            fetch(api_root+'events', {
                 method: 'GET',
             }),
-            fetch('api/carpools', {
+            fetch(api_root+'carpools', {
                 method: 'GET',
             }),
-            fetch('api/participants', {
+            fetch(api_root+'participants', {
                 method: 'GET',
             })
         ]).then((res)=>{
@@ -61,7 +63,7 @@ class App extends Component {
                 }
             })
         });
-        var evtSource = new EventSource('api/update-stream');
+        var evtSource = new EventSource(api_root+'update-stream');
 
         evtSource.addEventListener("put-event", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
@@ -90,7 +92,6 @@ class App extends Component {
         });
         evtSource.addEventListener("put-participant", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
-            console.log("parsed",parsed);
             this.setState((state)=>{
                 return({
                     ...state,
@@ -103,7 +104,6 @@ class App extends Component {
         })
         evtSource.addEventListener("delete-participant", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
-            console.log("parsed",parsed);
             this.setState((state)=>{
                 let participantsClone=Object.assign({}, state.participants);
                 delete participantsClone[parsed.id]
@@ -115,7 +115,6 @@ class App extends Component {
         });
         evtSource.addEventListener("put-carpool", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
-            console.log("parsed",parsed);
             this.setState((state)=>{
                 return({
                     ...state,
@@ -128,7 +127,6 @@ class App extends Component {
         })
         evtSource.addEventListener("delete-carpool", (e) => {
             let parsed=unflatten(JSON.parse(e.data));
-            console.log("parsed",parsed);
             this.setState((state)=>{
                 let carpoolsClone=Object.assign({}, state.carpools);
                 delete carpoolsClone[parsed.id]
@@ -139,7 +137,7 @@ class App extends Component {
             });
         });
         evtSource.addEventListener("refresh-participants", (e) => {
-            fetch('api/participants', {
+            fetch(api_root+'participants', {
                 method: 'GET',
             })
             .then((res)=>{
@@ -160,7 +158,13 @@ class App extends Component {
             generateServerErrorPopupMessage:this.generateServerErrorPopupMessage
         };
     }
-
+    setClickDetectCallback=(callback)=>{
+        this.clickDetectCallback = callback;
+        this.setState({showClickDetect:callback!=null});
+    }
+    handleClickDetectClick=()=>{
+        this.clickDetectCallback();
+    }
     popStateListener=(e)=>{
         if(e.state==null){
             this.setState({view:"event-list"});
@@ -238,6 +242,7 @@ class App extends Component {
     }
 
     render(){
+        console.log();
         let carpoolByEventWithCount={};
         let participantByEvent={};
 
@@ -273,47 +278,6 @@ class App extends Component {
         }
 
 
-        let eventsWithStats=Object.assign({},this.state.events);
-
-        for(let eventId of Object.keys(this.state.events)){
-            let stats={
-                amountCarpools:0,
-                totalCapacity:0,
-                takenDeparting:0,
-                takenReturning:0,
-                departingWaitlist:0,
-                returningWaitlist:0,
-            };
-
-            for (let carpoolId of Object.keys(carpoolByEventWithCount[eventId])) {
-                let carpool=carpoolByEventWithCount[eventId][carpoolId];
-                stats.amountCarpools++;
-                stats.totalCapacity+=parseInt(carpool.seats);
-            }
-
-            for (let participantId of Object.keys(participantByEvent[eventId])) {
-                let participant=participantByEvent[eventId][participantId];
-                switch(participant.carpool.departing.type){
-                    case 0:
-                    stats.departingWaitlist++;
-                    break;
-                    case 1:
-                    break;
-                    default:
-                    stats.takenDeparting++;
-                }
-                switch(participant.carpool.returning.type){
-                    case 0:
-                    stats.returningWaitlist++;
-                    break;
-                    case 1:
-                    break;
-                    default:
-                    stats.takenReturning++;
-                }
-            }
-            eventsWithStats[eventId]=Object.assign({stats:stats},eventsWithStats[eventId]);//immutability
-        }
 
 
         let elem=null;
@@ -326,19 +290,13 @@ class App extends Component {
 
             switch (this.state.view) {
                 case "event-list":{
-                    elem=<EventList popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={eventsWithStats}/>;
                     break;
                 }
-                case "add-form":{
+                case "add-form-passenger":
+                case "add-form-carpool": {
                     let eventId=this.state.eventId;
                     if(!(eventId in this.state.events))elem=invalidEventIdError;
-                    else elem=<AddForm popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={this.state.events} eventId={eventId} participants={participantByEvent[eventId]} availableCarpools={carpoolByEventWithCount[eventId]}/>;
-                    break;
-                }
-                case "driver-view":{
-                    let eventId=this.state.eventId;
-                    if(!(eventId in this.state.events))elem=invalidEventIdError;
-                    else elem=<DriverView popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={this.state.events} eventId={eventId} carpools={carpoolByEventWithCount[eventId]} participants={participantByEvent[eventId]}/>;
+                    else elem=<AddForm popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={this.state.events} eventId={eventId} participants={participantByEvent[eventId]} availableCarpools={carpoolByEventWithCount[eventId]} participantType={this.state.view.split("-").pop()}/>;
                     break;
                 }
                 case "participant-view":{
@@ -353,7 +311,7 @@ class App extends Component {
                     case ParticipantPopup:{
                         if(!(this.state.shownPopup.id in this.state.participants))break;
                         let eventId=this.state.participants[this.state.shownPopup.id].eventId;
-                        popup=<ParticipantPopup popupMessageFunctions={this.popupMessageFunctions} showPopup={this.showPopup} hidePopup={this.hidePopup} availableCarpools={carpoolByEventWithCount[eventId]} carpools={this.state.carpools} participants={this.state.participants} id={this.state.shownPopup.id}/>
+                        popup=<ParticipantPopup popupMessageFunctions={this.popupMessageFunctions} showPopup={this.showPopup} hidePopup={this.hidePopup} availableCarpools={carpoolByEventWithCount[eventId]} carpools={this.state.carpools} participants={this.state.participants} id={this.state.shownPopup.id} setClickDetectCallback={this.setClickDetectCallback}/>
                         break;
                     }
                     case CarpoolPopup:{
@@ -376,9 +334,13 @@ class App extends Component {
 
         return(
             <>
-                {popup}
-                {elem}
                 {this.state.shownPopupMessage?<PopupMessage hidePopupMessage={this.hidePopupMessage} {...this.state.shownPopupMessage}/>:null}
+
+                {popup}
+                <EventList popupMessageFunctions={this.popupMessageFunctions} goToEvents={this.goToEvents} showPopup={this.showPopup} changeView={this.changeView} events={this.state.events} allParticipants={participantByEvent} allCarpools={carpoolByEventWithCount} adminMode={this.state.adminMode}/>
+
+                {elem}
+                {this.state.showClickDetect?<div className="clickDetect" onClick={this.handleClickDetectClick}></div>:null}
             </>
         );
     }

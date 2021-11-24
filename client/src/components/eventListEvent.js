@@ -1,6 +1,10 @@
 import React, {Component} from "react";
 import {shouldOpenInNewTab} from "../util.js";
 import EventPopup from "./eventPopup";
+import DriverView from "./driverView";
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
 import moment from 'moment';
 
 class EventListEvent extends Component {
@@ -15,8 +19,11 @@ class EventListEvent extends Component {
             id:this.props.id
         });
     }
-    addClicked=(e)=>{
-        this.props.changeView("add-form",this.props.id,shouldOpenInNewTab(e));
+    addClickedPassenger=(e)=>{
+        this.props.changeView("add-form-passenger",this.props.id,shouldOpenInNewTab(e));
+    }
+    addClickedCarpool=(e)=>{
+        this.props.changeView("add-form-carpool",this.props.id,shouldOpenInNewTab(e));
     }
     driverViewClicked=(e)=>{
         this.props.changeView("driver-view",this.props.id,shouldOpenInNewTab(e));
@@ -43,29 +50,38 @@ class EventListEvent extends Component {
                             sameElse: "MMMM Do, YYYY"
                         })}
                     </span>
+                    {this.props.adminMode?<button type="button" name="button" onClick={this.editClicked}>
+                        <img src="https://d18vdu4p71yql0.cloudfront.net/libraries/noun-project/Gear-1ea286ce69.svg"/>
+                    </button>:null}
+                    <br/>
+
                 </div>
 
                 <div className="dbbox">
                     <div className="description">
-
-                        <div className="note">{this.props.note}</div>
-                        <div className="statistics">
-                            <strong>{this.props.stats.amountCarpools}</strong> carpools have the capacity of <strong>{this.props.stats.totalCapacity}</strong> people.<br/>
-                            <strong>{this.props.stats.takenDeparting}</strong> seats taken in departing trip, <strong>{this.props.stats.takenReturning}</strong> seats taken in returning trip.<br/>
-                            <strong>{this.props.stats.departingWaitlist}</strong> people are on the departing waitlist and <strong>{this.props.stats.returningWaitlist}</strong> people are on the returning waitlist.<br/>
-                            <br/>
-                            Default departing time: <strong>{this.props.defaultDepartingTime}</strong>&emsp;
-                            Default returning time: <strong>{this.props.defaultReturningTime}</strong><br/>
-
-                        </div>
+                        <div className="scheduleinfo">
+                           <span className="cat">Arrival Time:</span> {this.props.defaultDepartingTime.trim() ? this.props.defaultDepartingTime : <i>unspecified</i>}&emsp;&emsp;
+                           <span className="cat">Departure Time:</span> {this.props.defaultReturningTime.trim() ? this.props.defaultReturningTime : <i>unspecified</i>}
+                         </div>
+                         <div className="buttons">
+                             <button type="button" name="button" onClick={this.addClickedPassenger}>Add Passenger</button>
+                             <button type="button" name="button" onClick={this.addClickedCarpool}>Add Carpool</button>
+                             <button type="button" name="button" onClick={this.participantViewClicked}>View as Grid</button>
+                         </div>
+                        {this.props.note.trim() ?
+                            <div className="note"><div className="noteprefix">Note:</div><ReactMarkdown children={this.props.note} remarkPlugins={[remarkGfm]} /></div>:
+                            null}
+                        <DriverView
+                            popupMessageFunctions={this.props.popupMessageFunctions}
+                            showPopup={this.props.showPopup}
+                            changeView={this.props.changeView}
+                            events={this.props.events}
+                            participants={this.props.participants}
+                            carpools={this.props.carpools}
+                            eventId={this.id}/>
                     </div>
 
-                    <div className="buttons">
-                        <button type="button" name="button" onClick={this.addClicked}>Add Participant/Driver</button><br/>
-                        <button type="button" name="button" onClick={this.driverViewClicked}>Driver View</button><br/>
-                        <button type="button" name="button" onClick={this.participantViewClicked}>Participant View</button><br/>
-                        <button type="button" name="button" onClick={this.editClicked}>Edit</button><br/>
-                    </div>
+
                 </div>
             </div>
         );

@@ -18,8 +18,9 @@ class DriverViewCarpool extends Component {
     render(){
         let props=this.props;
         let name;
-        let countInfo="";
-
+        let countInfo=[];
+        let emptyDepartingMessage="Empty"
+        let emptyReturningMessage="Empty"
         switch(props.for.type){
             case 0:
             name="Waitlist";
@@ -29,16 +30,31 @@ class DriverViewCarpool extends Component {
             break;
             default:{
                 let carpool=props.carpools[props.for.carpoolId]
+                var xoffset=15*(1+2*carpool.seats);
+
                 if(carpool.trip==1){
-                    countInfo+="No Departing Trip"
+                    xoffset-=15*carpool.seats;
+
+                    emptyDepartingMessage="No Departing Trip"
                 }else{
-                    countInfo+=`${carpool.takenDeparting}/${carpool.seats}`
+                    for(let i=0;i<carpool.takenDeparting;i++){
+                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
+                    }
+                    for(let i=carpool.takenDeparting;i<carpool.seats;i++){
+                        countInfo.push(<div key={"departing"+i} style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
+                    }
                 }
-                countInfo+=", "
+                countInfo.push(<div key="vertbar" className="vertbar" style={{right:(xoffset-=15)+"px"}}></div>)
                 if(carpool.trip==0){
-                    countInfo+="No Returning Trip"
+                    xoffset-=15*carpool.seats;
+                    emptyReturningMessage="No Returning Trip"
                 }else{
-                    countInfo+=`${carpool.takenReturning}/${carpool.seats}`
+                    for(let i=0;i<carpool.takenReturning;i++){
+                        countInfo.push(<div key={"returning"+i} style={{right:(xoffset-=15)+"px"}} className="filleddot"></div>)
+                    }
+                    for(let i=carpool.takenReturning;i<carpool.seats;i++){
+                        countInfo.push(<div key={"returning"+i} style={{right:(xoffset-=15)+"px"}} className="emptydot"></div>)
+                    }
                 }
 
                 name=carpool.name;
@@ -49,7 +65,7 @@ class DriverViewCarpool extends Component {
 
         let isDropHovered=this.props.dropTargetCarpool&&(this.props.dropTargetCarpool.type==this.props.for.type&&(this.props.for.type!=3||this.props.dropTargetCarpool.carpoolId==this.props.for.carpoolId))
         return(
-            <>
+            <div className={"driverViewGrid"+(this.props.for.type==0 || this.props.for.type==1?" specialcarpooltype":"")}>
                 {
                     this.props.dropTargetsShown?(
                         this.props.dropTargetDeparting?
@@ -57,45 +73,60 @@ class DriverViewCarpool extends Component {
                         <div className={"dropTarget"+(isDropHovered?" hover":"")} style={{"gridRow":`${this.props.row} / span 2`,"gridColumn":2}} data-type={this.props.for.type} data-carpool-id={this.props.for.carpoolId}></div>
                     ):null
                 }
-                <div style={{"gridRow":this.props.row}} className={"carpoolHeader"+((this.props.for.type==3)?" underlineable":"")} onClick={this.carpoolPressed}>
+                <div style={{"gridRow":this.props.row}} className={"carpoolHeader whiteforeground "+((this.props.for.type==3)?" underlineable showeditsymbol":"")} onClick={this.carpoolPressed}>
                     {name}
                     <span className="countInfo">
                         {countInfo}
                     </span>
                 </div>
                 <div style={{"gridRow":this.props.row+1,"gridColumn":1}} className="carpoolTripContainer">
-                    {//driver first
-                        driverId>=0&&(props.participants[driverId].carpool.departing.type==3&&props.participants[driverId].carpool.departing.carpoolId==props.for.carpoolId)?
-                        <DriverViewCarpoolParticipant isDepartingTrip={true} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={driverId} isDriver={true} participant={props.participants[driverId]}/>
-                        :null
-                    }
-                    {
-                        props.containingDeparting.map((id)=>{
-                            if(driverId==id)return(null);
-                            return(
-                                <DriverViewCarpoolParticipant isDepartingTrip={true} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={id} isDriver={false} participant={props.participants[id]}/>
-                            );
-                        })
+                    <div className="key">Departing Trip:</div>
+                    {props.containingDeparting.length ?(
+                        <>
+                            {
+                                driverId>=0&&(props.participants[driverId].carpool.departing.type==3&&props.participants[driverId].carpool.departing.carpoolId==props.for.carpoolId)?
+                                <DriverViewCarpoolParticipant isDepartingTrip={true} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={driverId} isDriver={true} participant={props.participants[driverId]}/>
+                                :null
+                            }
+                            {
+                                props.containingDeparting.map((id)=>{
+                                    if(driverId==id)return(null);
+                                    return(
+                                        <DriverViewCarpoolParticipant isDepartingTrip={true} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={id} isDriver={false} participant={props.participants[id]}/>
+                                    );
+                                })
+                            }
+                        </>
+                    ):
+                        <div className="carpoolParticipant"><i style={{color:"grey", fontSize:"0.8em"}}>{emptyDepartingMessage}</i></div>
+
                     }
                 </div>
                 <div style={{"gridRow":this.props.row+1,"gridColumn":2}} className="carpoolTripContainer">
-                    {//driver first
-                        driverId>=0&&(props.participants[driverId].carpool.returning.type==3&&props.participants[driverId].carpool.returning.carpoolId==props.for.carpoolId)?
-                        <DriverViewCarpoolParticipant isDepartingTrip={false} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={driverId} isDriver={true} participant={props.participants[driverId]}/>
-                        :null
-                    }
-                    {
-                        props.containingReturning.map((id)=>{
-                            if(driverId==id)return(null);
-                            return(
-                                <DriverViewCarpoolParticipant isDepartingTrip={false} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={id} isDriver={false} participant={props.participants[id]}/>
-                            );
-                        })
-                    }
+                    <div className="key">Returning Trip:</div>
 
+                    {props.containingReturning.length ?(
+                        <>
+                            {
+                                driverId>=0&&(props.participants[driverId].carpool.returning.type==3&&props.participants[driverId].carpool.returning.carpoolId==props.for.carpoolId)?
+                                <DriverViewCarpoolParticipant isDepartingTrip={false} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={driverId} isDriver={true} participant={props.participants[driverId]}/>
+                                :null
+                            }
+                            {
+                                props.containingReturning.map((id)=>{
+                                    if(driverId==id)return(null);
+                                    return(
+                                        <DriverViewCarpoolParticipant isDepartingTrip={false} dropHandlers={this.props.dropHandlers} showPopup={this.props.showPopup} showDropOutline={this.props.showDropOutline} key={id} isDriver={false} participant={props.participants[id]}/>
+                                    );
+                                })
+                            }
+                        </>
+                    ):
+                        <div className="carpoolParticipant"><i style={{color:"grey", fontSize:"0.8em"}}>{emptyReturningMessage}</i></div>
+                    }
                 </div>
 
-            </>
+            </div>
         );
     }
 }

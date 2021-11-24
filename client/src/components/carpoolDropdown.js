@@ -48,10 +48,12 @@ class CarpoolDropdown extends Component {
         this.setState({isOpen: true});
     }
     handleHide = (event)=>{
+        console.log("hide!");
         this.setState({isOpen: false});
     }
 
     render(){
+        console.log(this.state);
         let selectedCarpool=this.props.selectedCarpools[this.props.isDepartingTrip?"departing":"returning"];
         let selectedCarpoolName="";
         //0 for waitlist, 1 for parent, 3 for existing carpool.
@@ -98,9 +100,10 @@ class CarpoolDropdown extends Component {
                                     let disabled=seatsTaken>=realSeats;
                                     if(carpoolObj.id==selectedCarpool.carpoolId&&selectedCarpool.type==3)classes.push("selected");
                                     if(disabled)classes.push("disabled");
+
                                     return(
                                         <a className={classes.join(' ')} key={carpoolObj.id} onClick={disabled?null:()=>{this.props.selectedCarpoolsChangeHandler(this.props.isDepartingTrip,{type:3,carpoolId:carpoolObj.id});this.handleHide()}}>
-                                            <div className="carpoolName">{carpoolObj.name}<span className="carpoolCount">{seatsTaken}/{realSeats}</span></div>
+                                            <div className="carpoolName">{carpoolObj.name}<span className="carpoolCount">{"("+(realSeats-seatsTaken) + "\u00a0free)"}</span></div>
                                             <div className="carpoolOrigin">{carpoolObj.origin}</div>
                                             <div className="carpoolTime">{this.props.isDepartingTrip?carpoolObj.departingTime:carpoolObj.returningTime}</div>
                                         </a>
