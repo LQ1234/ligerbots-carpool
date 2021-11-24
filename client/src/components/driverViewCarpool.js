@@ -76,7 +76,7 @@ class DriverViewCarpool extends Component {
                     ):null
                 }
                 <div style={{"gridRow":this.props.row}} className={"carpoolHeader whiteforeground "+((this.props.for.type==3)?" underlineable showeditsymbol":"")} onClick={this.carpoolPressed}>
-                    {name} {hasnote ? <img src="note.png"/> : null}
+                    {name} {hasnote ? <img src={window.carpool_root+"note.png"}/> : null}
                     <span className="countInfo">
                         {countInfo}
                     </span>

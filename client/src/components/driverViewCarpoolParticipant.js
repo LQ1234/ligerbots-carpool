@@ -201,7 +201,7 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
                 onMouseDown={this.mouseDownListener}
                 style={{"top":`${this.state.dragpos.y}px`,"left":`${this.state.dragpos.x}px`}}
             >
-                <div className={"carpoolParticipantText"+(this.state.dragging?"":" showeditsymbol")}>{"•\u00A0"+this.props.participant.personalInformation.name}{this.props.participant.personalInformation.note.trim()? <img src="note.png"/> : null}</div>
+                <div className={"carpoolParticipantText"+(this.state.dragging?"":" showeditsymbol")}>{"•\u00A0"+this.props.participant.personalInformation.name}{this.props.participant.personalInformation.note.trim()? <img src={window.carpool_root+"note.png"}/> : null}</div>
             </div>
         );
     }
