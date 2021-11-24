@@ -145,7 +145,6 @@ async function carpoolCanAcceptMoreParticipants(carpoolIdentifier,isDepartingTri
     if(carpoolIdentifier.type!=3) return(true);
 
     let carpools = await query("SELECT * FROM carpools WHERE id = ?",[carpoolIdentifier.carpoolId]);
-    console.log("!!!!",carpoolIdentifier.type, carpoolIdentifier.carpoolId);
 
     if(carpools.length!=1) return(false);
     let carpool=carpools[0];
@@ -181,9 +180,23 @@ function databaseError(res,err){
     console.log("database error",err);
 }
 
+let fs = require('fs')
+let crypto = require('crypto');
+
+let psk = fs.readFileSync('../../psk.txt', 'utf8')
+console.log(psk)
+function verifyUserType(logindata,required_usertype){
+    let [usertype, salt, hash] = logindata.split(",");
+    let calculated_hash = crypto.createHash('sha256').update(usertype+","+salt+","+psk).digest('base64');
+    if(usertype!=required_usertype)return false;
+    return(hash==calculated_hash);
+}
 
 let express = require("express");
 var app = express();
+var cors = require('cors')
+app.use(cors())
+console.log("cors");
 app.use(express.json());
 
 app.get("/api/events", async (req, response) => {
@@ -196,7 +209,9 @@ app.get("/api/events", async (req, response) => {
 });
 
 app.post("/api/add-event", async (req, response) => {
+
     try {
+        console.log(req.body.logindata)
         let cleanReq=cleanUserInput(req.body,["title","note","date","defaultDepartingTime","defaultReturningTime"]);
 
         if(cleanReq==null){
@@ -225,6 +240,11 @@ app.post("/api/add-event", async (req, response) => {
 
 app.post("/api/edit-event", async (req, response) => {
     try {
+        if(!verifyUserType(req.body.logindata, "admin")){
+            let errRes={"result":"failure","error":"Bad Auth"}
+            response.send(JSON.stringify(errRes));
+            return;
+        }
         let cleanReq=cleanUserInput(req.body,["id","title","note","date","defaultDepartingTime","defaultReturningTime"]);
         if(cleanReq==null){
             let errRes={"result":"failure","error":"Bad Request"}
@@ -279,7 +299,6 @@ app.post("/api/delete-event", async (req, response) => {
 app.get("/api/carpools", async (req, response) => {
     try {
         let carpools=await query("SELECT * FROM carpools");
-        console.log("!!!",carpools);
         response.send(JSON.stringify({"result":"success","carpools":carpools}));
     } catch (e) {
         databaseError(response,e);
@@ -308,7 +327,6 @@ app.post("/api/add-carpool-or-participant",async (req, response) => {
         }else{
             processedParticipantReq.carpool_drivingCarpool=null;
         }
-        console.log("!!!!",processedParticipantReq);
 
         if(carpool_isDriver){
             if(carpoolReq==null){//new carpool but carpool not supplied
@@ -541,12 +559,14 @@ app.post("/api/delete-participant", async (req, response) => {
 let connectedClients=[];
 let messageId=0;
 app.get("/api/update-stream",(req, response) => {
+
     response.writeHead(200, {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
         "Connection": "keep-alive",
+        "Access-Control-Allow-Origin": "*"
     });
-    response.write("\n");
+    response.write('TEST');
 
     connectedClients.push(response);
     req.on('close', () => {

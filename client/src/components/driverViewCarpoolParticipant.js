@@ -7,8 +7,8 @@ class DriverViewCarpoolParticipant extends Component {/*Reimplement drag and dro
         super(props);
         this.state={
             dragpos:{
-                x:0,
-                y:0
+                x:10,
+                y:10
             }
         }
         this.startDragPos={
