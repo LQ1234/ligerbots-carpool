@@ -105,7 +105,7 @@ class ParticipantPopup extends Component {
                             <div className="infoGrid">
                                 <label><span>Name: </span><input name="name" value={this.state.modified.personalInformation.name} onChange={this.handlePersonalInformationChange}/></label>
                                 <label><span>Email: </span><input name="email" value={this.state.modified.personalInformation.email} onChange={this.handlePersonalInformationChange}/></label>
-                                <label><span>Number: </span><input name="number" value={this.state.modified.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
+                                <label><span>Phone Number: </span><input name="number" value={this.state.modified.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
                                 {
                                     drivingCarpool?
                                         <div>

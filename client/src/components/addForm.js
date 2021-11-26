@@ -154,7 +154,7 @@ class AddForm extends Component {
             <div className="popup-wrapper" onClick={this.handleHide}>
                 <div className="popup-container">
                     <div className="title" >
-                    New {this.props.participantType=="carpool"?"Carpool":"Passenger"}
+                    New {this.props.participantType=="carpool"?"Car":"Passenger"}
                     </div>
                     <div className="popup" >
 
@@ -165,7 +165,7 @@ class AddForm extends Component {
                             <div className="infoGrid">
                                 <label><span>Name: </span><input name="name" value={this.state.personalInformation.name} onChange={this.handlePersonalInformationChange}/></label>
                                 <label><span>Email: </span><input name="email" value={this.state.personalInformation.email} onChange={this.handlePersonalInformationChange}/></label>
-                                <label><span>Number: </span><input name="number" value={this.state.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
+                                <label><span>Phone Number: </span><input name="number" value={this.state.personalInformation.number} onChange={this.handlePersonalInformationChange}/></label>
                                 {
                                     this.props.participantType=="passenger"?
                                     <>
@@ -203,7 +203,7 @@ class AddForm extends Component {
                                             <label><input type="radio" name="trip" checked={this.state.newCarpool.trip==2} value="2" onChange={this.handleNewCarpoolChange}/>Both</label>
                                         </div>
 
-                                        <label><span>Carpool Note: </span><br/><textarea name="note" value={this.state.newCarpool.note} onChange={this.handleNewCarpoolChange}/></label>
+                                        <label><span>Note: </span><br/><textarea name="note" value={this.state.newCarpool.note} onChange={this.handleNewCarpoolChange}/></label>
                                     </div>
                                 </div>
                             </>:null

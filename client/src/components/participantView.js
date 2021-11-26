@@ -36,8 +36,8 @@ class ParticipantView extends Component {
                 </div>*/}
                     <div className="participantViewGrid">
                         <div className="key">Participant</div>
-                        <div className="key">Departing Carpool</div>
-                        <div className="key">Returning Carpool</div>
+                        <div className="key">Departing Car</div>
+                        <div className="key">Returning Car</div>
                         {Object.values(this.props.participants).map(
                             participant=>
                             (<ParticipantViewParticipant {...participant} showPopup={this.props.showPopup} carpools={this.props.carpools} key={participant.id}></ParticipantViewParticipant>))}

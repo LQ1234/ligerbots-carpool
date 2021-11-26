@@ -43,7 +43,7 @@ class ParticipantViewParticipant extends React.Component {
                 return("");
             default:
                 let carpool=Object.values(this.props.carpools).find((c)=>c.id==carpoolId);
-                return(carpool?carpool.name:"<Invalid carpool>")
+                return(carpool?carpool.name:"<Invalid car>")
         }
     }
 

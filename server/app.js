@@ -581,6 +581,13 @@ app.get("/api/update-stream",(req, response) => {
 });
 
 setInterval(()=>{
+    con.ping(function (err) {
+        console.log("Connection lost! Killing...");
+        process.exit(1);
+    });
+},1000*60*10);
+
+setInterval(()=>{
     connectedClients.forEach((item, i) => {
         item.write(`:keep-alive\n`);
     });

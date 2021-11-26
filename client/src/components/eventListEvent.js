@@ -65,7 +65,7 @@ class EventListEvent extends Component {
                          </div>
                          <div className="buttons">
                              <button type="button" name="button" onClick={this.addClickedPassenger}>Add Passenger</button>
-                             <button type="button" name="button" onClick={this.addClickedCarpool}>Add Carpool</button>
+                             <button type="button" name="button" onClick={this.addClickedCarpool}>Add Car</button>
                              <button type="button" name="button" onClick={this.participantViewClicked}>View as Grid</button>
                          </div>
                         {this.props.note.trim() ?

@@ -97,7 +97,7 @@ class CarpoolPopup extends Component {
                     <div className="popup-container">
 
                         <div className="title" >
-                        Editing Carpool
+                        Editing Car
                         </div>
                         <div className="popup" >
                             <div className="infoGrid">

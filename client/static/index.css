@@ -2,8 +2,6 @@ body {
 
 }
 #root{
-    overflow-x: hidden;
-    overflow-y: hidden;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
     font-weight: normal;
